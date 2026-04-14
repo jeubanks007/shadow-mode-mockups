@@ -281,6 +281,34 @@
     background: var(--tealBg); border: 1px solid var(--teal); border-radius: 12px;
     padding: 1px 8px; margin-left: 8px; vertical-align: middle;
   }
+  .opt-cases-toggle {
+    display: inline-flex; align-items: center; gap: 6px; margin-top: 10px;
+    padding: 5px 12px; background: var(--bg3); border: 1px solid var(--stroke);
+    border-radius: 6px; color: var(--brand); font-size: 12px; cursor: pointer;
+    font-family: inherit; font-weight: 600; transition: background .15s;
+  }
+  .opt-cases-toggle:hover { background: var(--stroke); }
+  .opt-cases-toggle .arrow { transition: transform .2s; display: inline-block; }
+  .opt-cases-toggle.open .arrow { transform: rotate(90deg); }
+  .opt-cases-panel {
+    max-height: 0; overflow: hidden; transition: max-height .3s ease-out; margin-top: 0;
+  }
+  .opt-cases-panel.open { max-height: 600px; margin-top: 10px; overflow-y: auto; }
+  .opt-cases-tbl { width: 100%; border-collapse: collapse; font-size: 12px; }
+  .opt-cases-tbl th {
+    padding: 7px 12px; font-size: 10px; font-weight: 700; text-transform: uppercase;
+    letter-spacing: .04em; color: var(--fg3); text-align: left; background: var(--bg3);
+    border-bottom: 1px solid var(--stroke);
+  }
+  .opt-cases-tbl td { padding: 7px 12px; border-bottom: 1px solid var(--stroke); font-size: 12px; }
+  .opt-cases-tbl tr:hover td { background: var(--bg2); }
+  .opt-status-badge {
+    display: inline-block; padding: 1px 7px; border-radius: 4px;
+    font-size: 10px; font-weight: 600; margin-right: 4px;
+  }
+  .status-failing { background: var(--redBg); color: var(--red); }
+  .status-not-esc { background: var(--yellowBg); color: #b8860b; }
+  .status-passing { background: var(--greenBg); color: var(--green); }
   @media(max-width:700px) { .opt-kpi-grid { grid-template-columns: repeat(2, 1fr); } }
 </style>
 </head>
@@ -1283,6 +1311,19 @@
             <span class="opt-badge opt-badge-purple">2,384 cases affected</span>
             <span class="opt-badge opt-badge-green">+0.2% pass rate lift</span>
           </div>
+          <button class="opt-cases-toggle" onclick="toggleCases(this)"><span class="arrow">▶</span> 5 affected cases</button>
+          <div class="opt-cases-panel">
+            <table class="opt-cases-tbl">
+              <thead><tr><th>Case #</th><th>Scenario</th><th>Quality Avg</th><th>Status</th><th>Knowledge Source</th></tr></thead>
+              <tbody>
+                <tr><td>2603170030004997.0</td><td>SCIM - Identity - 'how to'</td><td>4.0</td><td><span class="opt-status-badge status-failing">failing</span><span class="opt-status-badge status-not-esc">not escalated</span></td><td>Azure/Microsoft Entra App Integration/App Registrations</td></tr>
+                <tr><td>2603210030000521.0</td><td>Chat with CMET team</td><td>3.0</td><td><span class="opt-status-badge status-failing">failing</span><span class="opt-status-badge status-not-esc">not escalated</span></td><td>SharePoint/SharePoint Server/Administration</td></tr>
+                <tr><td>2603180050003351.0</td><td>Chat with CMET team</td><td>1.0</td><td><span class="opt-status-badge status-failing">failing</span><span class="opt-status-badge status-not-esc">not escalated</span></td><td>Microsoft 365/Microsoft Graph/Files, Sites and Lists APIs</td></tr>
+                <tr><td>2603050030006894.0</td><td>CritSit QandA</td><td>0</td><td><span class="opt-status-badge status-failing">failing</span><span class="opt-status-badge status-not-esc">not escalated</span></td><td>Azure/Azure Local/Deploy Azure Local</td></tr>
+                <tr><td>2603210030000521.0</td><td>Chat with CMET team</td><td>0</td><td><span class="opt-status-badge status-failing">failing</span><span class="opt-status-badge status-not-esc">not escalated</span></td><td>SharePoint/SharePoint Server 2019/Administration</td></tr>
+              </tbody>
+            </table>
+          </div>
         </div>
 
         <!-- #2: 952 cases -->
@@ -1296,6 +1337,19 @@
           <div class="opt-impact">
             <span class="opt-badge opt-badge-purple">952 cases affected</span>
             <span class="opt-badge opt-badge-green">+6.5% pass rate lift</span>
+          </div>
+          <button class="opt-cases-toggle" onclick="toggleCases(this)"><span class="arrow">▶</span> 5 affected cases</button>
+          <div class="opt-cases-panel">
+            <table class="opt-cases-tbl">
+              <thead><tr><th>Case #</th><th>Scenario</th><th>Quality Avg</th><th>Status</th><th>Knowledge Source</th></tr></thead>
+              <tbody>
+                <tr><td>2603050030006894.0</td><td>CritSit QandA</td><td>2.0</td><td><span class="opt-status-badge status-failing">failing</span><span class="opt-status-badge status-not-esc">not escalated</span></td><td>Azure/Azure Local/Deploy Azure Local</td></tr>
+                <tr><td>2603210030000521.0</td><td>Chat with CMET team</td><td>2.0</td><td><span class="opt-status-badge status-failing">failing</span><span class="opt-status-badge status-not-esc">not escalated</span></td><td>SharePoint/SharePoint Server 2019/Administration</td></tr>
+                <tr><td>2603200030001711.0</td><td>CritSit QandA</td><td>1.0</td><td><span class="opt-status-badge status-failing">failing</span><span class="opt-status-badge status-not-esc">not escalated</span></td><td>Microsoft 365/Authentication and Access/Conditional Access</td></tr>
+                <tr><td>2603180050003351.0</td><td>Chat with CMET team</td><td>2.0</td><td><span class="opt-status-badge status-failing">failing</span><span class="opt-status-badge status-not-esc">not escalated</span></td><td>Microsoft 365/Microsoft Graph/Files, Sites and Lists APIs</td></tr>
+                <tr><td>2603190040010017.0</td><td>Chat with CMET team</td><td>1.0</td><td><span class="opt-status-badge status-failing">failing</span><span class="opt-status-badge status-not-esc">not escalated</span></td><td>Microsoft 365/Customer Protection/IW Elevation</td></tr>
+              </tbody>
+            </table>
           </div>
         </div>
 
@@ -1311,6 +1365,19 @@
             <span class="opt-badge opt-badge-purple">589 cases affected</span>
             <span class="opt-badge opt-badge-green">+2.5% pass rate lift</span>
           </div>
+          <button class="opt-cases-toggle" onclick="toggleCases(this)"><span class="arrow">▶</span> 5 affected cases</button>
+          <div class="opt-cases-panel">
+            <table class="opt-cases-tbl">
+              <thead><tr><th>Case #</th><th>Scenario</th><th>Quality Avg</th><th>Status</th><th>Knowledge Source</th></tr></thead>
+              <tbody>
+                <tr><td>2603060010002270.0</td><td>SCIM - Identity - 'how to'</td><td>1.0</td><td><span class="opt-status-badge status-failing">failing</span><span class="opt-status-badge status-not-esc">not escalated</span></td><td>Azure/Microsoft Entra Directories/Users/Deleting a user</td></tr>
+                <tr><td>2603060030003585.0</td><td>SCIM - Identity - 'how to'</td><td>1.0</td><td><span class="opt-status-badge status-failing">failing</span><span class="opt-status-badge status-not-esc">not escalated</span></td><td>Azure/Microsoft Entra Sign-in/AD FS/OAuth, OIDC, SAML</td></tr>
+                <tr><td>2603060010002288.0</td><td>SCIM - Identity - 'how to'</td><td>1.0</td><td><span class="opt-status-badge status-failing">failing</span><span class="opt-status-badge status-not-esc">not escalated</span></td><td>Microsoft 365/Authentication and Access/Sign-In and Passwords</td></tr>
+                <tr><td>2603060040009981.0</td><td>SCIM - Identity - 'how to'</td><td>1.0</td><td><span class="opt-status-badge status-failing">failing</span><span class="opt-status-badge status-not-esc">not escalated</span></td><td>Microsoft 365/Entra ID Connect/Identity Synchronization</td></tr>
+                <tr><td>2603170030004997.0</td><td>SCIM - Identity - 'how to'</td><td>4.0</td><td><span class="opt-status-badge status-failing">failing</span><span class="opt-status-badge status-not-esc">not escalated</span></td><td>Azure/Microsoft Entra App Integration/App Registrations</td></tr>
+              </tbody>
+            </table>
+          </div>
         </div>
 
         <!-- #4: 583 cases -->
@@ -1324,6 +1391,19 @@
           <div class="opt-impact">
             <span class="opt-badge opt-badge-purple">583 cases affected</span>
             <span class="opt-badge opt-badge-green">+0.2% pass rate lift</span>
+          </div>
+          <button class="opt-cases-toggle" onclick="toggleCases(this)"><span class="arrow">▶</span> 5 affected cases</button>
+          <div class="opt-cases-panel">
+            <table class="opt-cases-tbl">
+              <thead><tr><th>Case #</th><th>Scenario</th><th>Quality Avg</th><th>Status</th><th>Knowledge Source</th></tr></thead>
+              <tbody>
+                <tr><td>2603190040010017.0</td><td>Chat with CMET team</td><td>2.0</td><td><span class="opt-status-badge status-failing">failing</span><span class="opt-status-badge status-not-esc">not escalated</span></td><td>Microsoft 365/Customer Protection/IW Elevation</td></tr>
+                <tr><td>2603050030006894.0</td><td>CritSit QandA</td><td>2.0</td><td><span class="opt-status-badge status-failing">failing</span><span class="opt-status-badge status-not-esc">not escalated</span></td><td>Azure/Azure Local/Deploy Azure Local</td></tr>
+                <tr><td>2603210030000521.0</td><td>Chat with CMET team</td><td>2.0</td><td><span class="opt-status-badge status-failing">failing</span><span class="opt-status-badge status-not-esc">not escalated</span></td><td>SharePoint/SharePoint Server 2019/Administration</td></tr>
+                <tr><td>2603190040010017.0</td><td>Chat with CMET team</td><td>2.0</td><td><span class="opt-status-badge status-failing">failing</span><span class="opt-status-badge status-not-esc">not escalated</span></td><td>Microsoft 365/Customer Protection/IW Elevation</td></tr>
+                <tr><td>2603180050003351.0</td><td>Chat with CMET team</td><td>1.0</td><td><span class="opt-status-badge status-failing">failing</span><span class="opt-status-badge status-not-esc">not escalated</span></td><td>Microsoft 365/Microsoft Graph/Files, Sites and Lists APIs</td></tr>
+              </tbody>
+            </table>
           </div>
         </div>
 
@@ -1339,6 +1419,19 @@
             <span class="opt-badge opt-badge-purple">527 cases affected</span>
             <span class="opt-badge opt-badge-green">+2.5% pass rate lift</span>
           </div>
+          <button class="opt-cases-toggle" onclick="toggleCases(this)"><span class="arrow">▶</span> 5 affected cases</button>
+          <div class="opt-cases-panel">
+            <table class="opt-cases-tbl">
+              <thead><tr><th>Case #</th><th>Scenario</th><th>Quality Avg</th><th>Status</th><th>Knowledge Source</th></tr></thead>
+              <tbody>
+                <tr><td>2603150030000493.0</td><td>MFA Reset</td><td>1.0</td><td><span class="opt-status-badge status-failing">failing</span><span class="opt-status-badge status-not-esc">not escalated</span></td><td>Microsoft 365/Customer Protection/MFA/Authenticator</td></tr>
+                <tr><td>2603170040011272.0</td><td>MFA Reset</td><td>1.0</td><td><span class="opt-status-badge status-failing">failing</span><span class="opt-status-badge status-not-esc">not escalated</span></td><td>Microsoft 365/Customer Protection/MFA/Authenticator</td></tr>
+                <tr><td>2603250010014773.0</td><td>MFA Reset</td><td>1.0</td><td><span class="opt-status-badge status-failing">failing</span><span class="opt-status-badge status-not-esc">not escalated</span></td><td>Microsoft 365/Customer Protection/MFA</td></tr>
+                <tr><td>2603250010001869.0</td><td>MFA Reset</td><td>1.0</td><td><span class="opt-status-badge status-failing">failing</span><span class="opt-status-badge status-not-esc">not escalated</span></td><td>Microsoft 365/Customer Protection/MFA</td></tr>
+                <tr><td>2603210010001153.0</td><td>MFA Reset</td><td>1.0</td><td><span class="opt-status-badge status-failing">failing</span><span class="opt-status-badge status-not-esc">not escalated</span></td><td>Microsoft 365/Customer Protection/MFA</td></tr>
+              </tbody>
+            </table>
+          </div>
         </div>
 
         <!-- #6: 465 cases -->
@@ -1353,6 +1446,19 @@
             <span class="opt-badge opt-badge-purple">465 cases affected</span>
             <span class="opt-badge opt-badge-green">+2.0% pass rate lift</span>
           </div>
+          <button class="opt-cases-toggle" onclick="toggleCases(this)"><span class="arrow">▶</span> 5 affected cases</button>
+          <div class="opt-cases-panel">
+            <table class="opt-cases-tbl">
+              <thead><tr><th>Case #</th><th>Scenario</th><th>Quality Avg</th><th>Status</th><th>Knowledge Source</th></tr></thead>
+              <tbody>
+                <tr><td>2603170040008377.0</td><td>SCIM - Intune - 'how to'</td><td>1.0</td><td><span class="opt-status-badge status-failing">failing</span><span class="opt-status-badge status-not-esc">not escalated</span></td><td>Azure/Microsoft Intune/Enroll Device</td></tr>
+                <tr><td>2603160040004750.0</td><td>SCIM - Intune - 'how to'</td><td>1.0</td><td><span class="opt-status-badge status-failing">failing</span><span class="opt-status-badge status-not-esc">not escalated</span></td><td>Azure/Microsoft Intune</td></tr>
+                <tr><td>2603060030005230.0</td><td>SCIM - Intune - 'how to'</td><td>1.0</td><td><span class="opt-status-badge status-failing">failing</span><span class="opt-status-badge status-not-esc">not escalated</span></td><td>Azure/Microsoft Intune</td></tr>
+                <tr><td>2603060050001772.0</td><td>SCIM - Intune - 'how to'</td><td>1.0</td><td><span class="opt-status-badge status-failing">failing</span><span class="opt-status-badge status-not-esc">not escalated</span></td><td>Azure/Microsoft Intune</td></tr>
+                <tr><td>2603060010000174.0</td><td>SCIM - Intune - 'how to'</td><td>1.0</td><td><span class="opt-status-badge status-failing">failing</span><span class="opt-status-badge status-not-esc">not escalated</span></td><td>Azure/Microsoft Intune</td></tr>
+              </tbody>
+            </table>
+          </div>
         </div>
 
         <!-- #7: 201 cases -->
@@ -1365,6 +1471,19 @@
           </div>
           <div class="opt-impact">
             <span class="opt-badge opt-badge-purple">201 cases affected</span>
+          </div>
+          <button class="opt-cases-toggle" onclick="toggleCases(this)"><span class="arrow">▶</span> 5 affected cases</button>
+          <div class="opt-cases-panel">
+            <table class="opt-cases-tbl">
+              <thead><tr><th>Case #</th><th>Scenario</th><th>Quality Avg</th><th>Status</th><th>Knowledge Source</th></tr></thead>
+              <tbody>
+                <tr><td>2603050030004337.0</td><td>ACTNow Error</td><td>1.0</td><td><span class="opt-status-badge status-failing">failing</span><span class="opt-status-badge status-not-esc">not escalated</span></td><td>Windows Servers/Windows Server 2022/WinRM</td></tr>
+                <tr><td>2603130050003397.0</td><td>ACTNow Error</td><td>2.0</td><td><span class="opt-status-badge status-failing">failing</span><span class="opt-status-badge status-not-esc">not escalated</span></td><td>Azure/Microsoft Intune/Autopilot/DevicePrep</td></tr>
+                <tr><td>2603100040006628.0</td><td>ACTNow Error</td><td>2.0</td><td><span class="opt-status-badge status-failing">failing</span><span class="opt-status-badge status-not-esc">not escalated</span></td><td>Exchange/Exchange Server SE/Hybrid/HCW</td></tr>
+                <tr><td>2602170050000397.0</td><td>ACTNow Error</td><td>2.0</td><td><span class="opt-status-badge status-failing">failing</span><span class="opt-status-badge status-not-esc">not escalated</span></td><td>Azure/Microsoft Entra/Conditional Access</td></tr>
+                <tr><td>2603100030000440.0</td><td>Case Summary</td><td>1.0</td><td><span class="opt-status-badge status-failing">failing</span><span class="opt-status-badge status-not-esc">not escalated</span></td><td>Microsoft 365/Customer Protection/MFA/Authenticator</td></tr>
+              </tbody>
+            </table>
           </div>
         </div>
       </div>
@@ -1389,6 +1508,13 @@
     btn.classList.add('active');
     document.getElementById('tab-' + tabId).classList.add('active');
   });
+
+  // Toggle affected cases panel
+  function toggleCases(btn) {
+    btn.classList.toggle('open');
+    var panel = btn.nextElementSibling;
+    panel.classList.toggle('open');
+  }
 
   // Optimizer metric filter via clickable table rows
   function filterByMetricRow(row, metric) {
