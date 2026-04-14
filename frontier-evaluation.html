@@ -217,6 +217,41 @@
     .kpi-row { flex-direction: column; }
     .score-cards-5 { grid-template-columns: 1fr 1fr; }
   }
+
+  /* ── Optimizer Tab Dark Theme ── */
+  .optimizer-dark{background:#0d1117;color:#c9d1d9;padding:32px 24px;border-radius:12px;margin:-16px -8px 0}
+  .optimizer-dark h2,.optimizer-dark h3{color:#f0f6fc;margin:0 0 4px}
+  .optimizer-dark .opt-subtitle{color:#8b949e;font-size:14px;margin:0 0 24px}
+  .optimizer-hero{text-align:center;margin-bottom:32px}
+  .optimizer-hero .hero-number{font-size:64px;font-weight:700;color:#f0f6fc;line-height:1}
+  .optimizer-hero .hero-label{font-size:14px;color:#8b949e;margin-top:4px}
+  .opt-kpi-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:40px}
+  .opt-kpi-card{background:#161b22;border:1px solid #30363d;border-radius:10px;padding:16px;text-align:center}
+  .opt-kpi-card .kpi-val{font-size:28px;font-weight:700;color:#f0f6fc}
+  .opt-kpi-card .kpi-lbl{font-size:12px;color:#8b949e;margin-top:2px}
+  .opt-action-card{background:#161b22;border:1px solid #30363d;border-radius:10px;padding:20px 20px 20px 24px;margin-bottom:16px;border-left:4px solid #30363d}
+  .opt-action-card.border-red{border-left-color:#da3633}
+  .opt-action-card.border-yellow{border-left-color:#d29922}
+  .opt-action-card.border-blue{border-left-color:#58a6ff}
+  .opt-action-card.border-green{border-left-color:#2ea043}
+  .opt-action-card .act-title{font-size:16px;font-weight:600;color:#f0f6fc;margin:0 0 8px}
+  .opt-action-card .act-detail{font-size:14px;color:#c9d1d9;margin:0 0 12px;line-height:1.5}
+  .opt-action-box{background:#0d1117;border:1px solid #30363d;border-radius:8px;padding:12px 14px;margin-bottom:12px}
+  .opt-action-box .box-label{font-size:11px;font-weight:600;color:#8b949e;text-transform:uppercase;letter-spacing:.5px;margin:0 0 4px}
+  .opt-action-box p{margin:0;font-size:13px;color:#c9d1d9;line-height:1.5}
+  .opt-impact{display:inline-flex;gap:8px;flex-wrap:wrap}
+  .opt-badge{font-size:11px;padding:3px 10px;border-radius:20px;font-weight:600}
+  .opt-badge-purple{background:rgba(137,87,229,.15);color:#d2a8ff;border:1px solid rgba(137,87,229,.3)}
+  .opt-badge-green{background:rgba(46,164,67,.15);color:#56d364;border:1px solid rgba(46,164,67,.3)}
+  .opt-targets-table{width:100%;border-collapse:collapse;margin-top:16px}
+  .opt-targets-table th{text-align:left;font-size:12px;color:#8b949e;padding:8px 12px;border-bottom:1px solid #30363d;font-weight:600;text-transform:uppercase;letter-spacing:.5px}
+  .opt-targets-table td{padding:10px 12px;border-bottom:1px solid #21262d;font-size:14px;color:#c9d1d9}
+  .opt-bar-track{height:8px;background:#21262d;border-radius:4px;overflow:hidden;min-width:120px}
+  .opt-bar-fill{height:100%;border-radius:4px;background:#58a6ff}
+  .opt-gap-red{color:#da3633;font-weight:600}
+  .opt-gap-yellow{color:#d29922;font-weight:600}
+  .opt-section{margin-bottom:40px}
+  @media(max-width:700px){.opt-kpi-grid{grid-template-columns:repeat(2,1fr)}}
 </style>
 </head>
 <body>
@@ -260,6 +295,7 @@
     <button class="tab-btn active" data-tab="overview">Overview</button>
     <button class="tab-btn" data-tab="scorecard">Scorecard</button>
     <button class="tab-btn" data-tab="shadow-metrics">Shadow Metrics</button>
+    <button class="tab-btn" data-tab="optimizer">Optimizer</button>
   </div>
 
   <!-- ==================== TAB: OVERVIEW ==================== -->
@@ -1149,6 +1185,172 @@
     </div>
 
   </div><!-- end tab-shadow-metrics -->
+
+  <!-- ==================== TAB: OPTIMIZER ==================== -->
+  <div class="tab-panel" id="tab-optimizer">
+    <div class="optimizer-dark">
+
+      <!-- Header -->
+      <h2>🎯 SXG Agent Optimizer</h2>
+      <p class="opt-subtitle">Data from March 01, 2026 — March 31, 2026</p>
+      <div class="optimizer-hero">
+        <div class="hero-number">9.9%</div>
+        <div class="hero-label">Current Pass Rate</div>
+      </div>
+
+      <!-- KPI Cards -->
+      <div class="opt-kpi-grid">
+        <div class="opt-kpi-card"><div class="kpi-val">14,652</div><div class="kpi-lbl">Total Cases</div></div>
+        <div class="opt-kpi-card"><div class="kpi-val">9.9%</div><div class="kpi-lbl">Pass Rate</div></div>
+        <div class="opt-kpi-card"><div class="kpi-val">13,201</div><div class="kpi-lbl">Failing Cases</div></div>
+        <div class="opt-kpi-card"><div class="kpi-val">0</div><div class="kpi-lbl">Case Failures</div></div>
+        <div class="opt-kpi-card"><div class="kpi-val">0</div><div class="kpi-lbl">Escalations</div></div>
+        <div class="opt-kpi-card"><div class="kpi-val">3.05/5</div><div class="kpi-lbl">Quality Score</div></div>
+      </div>
+
+      <!-- Prioritized Action Plan -->
+      <div class="opt-section">
+        <h3>🛠️ Prioritized Action Plan</h3>
+        <p class="opt-subtitle">Specific, actionable steps to improve agent performance. Ordered by impact.</p>
+
+        <!-- Item 1 -->
+        <div class="opt-action-card border-red">
+          <div class="act-title">🔴 Fix Relevance — Largest gap (+2.77)</div>
+          <p class="act-detail">Failing cases average 2.77/5 vs passing. This is the single biggest differentiator between passing and failing.</p>
+          <div class="opt-action-box">
+            <div class="box-label">Recommended Action</div>
+            <p>Review knowledge sources and RAG pipeline for relevance. Ensure the retrieval system surfaces relevant documentation before the agent generates a response.</p>
+          </div>
+          <div class="opt-impact">
+            <span class="opt-badge opt-badge-purple">952 cases affected</span>
+            <span class="opt-badge opt-badge-green">+6.5% pass rate lift</span>
+          </div>
+        </div>
+
+        <!-- Item 2 -->
+        <div class="opt-action-card border-red">
+          <div class="act-title">🔴 Fix Coherence — Second largest gap (+3.11)</div>
+          <p class="act-detail">Failing cases average 3.11/5 vs passing cases.</p>
+          <div class="opt-action-box">
+            <div class="box-label">Recommended Action</div>
+            <p>Add citation requirements and source verification to reduce hallucination. Implement coherence guardrails in the agent prompt.</p>
+          </div>
+          <div class="opt-impact">
+            <span class="opt-badge opt-badge-purple">583 cases affected</span>
+            <span class="opt-badge opt-badge-green">+0.2% pass rate lift</span>
+          </div>
+        </div>
+
+        <!-- Item 3 -->
+        <div class="opt-action-card border-yellow">
+          <div class="act-title">🎯 Priority scenario: MFA Reset</div>
+          <p class="act-detail">Risk score 27.6/10 — 2,316 failing on Relevance, 0 case failures out of 2,519 cases. Weakest metric: Groundedness (0/5).</p>
+          <div class="opt-action-box">
+            <div class="box-label">Recommended Action</div>
+            <p>Create dedicated knowledge articles for MFA Reset. Add scenario-specific prompt guardrails. Review all 2,316 failing case transcripts.</p>
+          </div>
+          <div class="opt-impact">
+            <span class="opt-badge opt-badge-purple">527 cases affected</span>
+            <span class="opt-badge opt-badge-green">+2.5% pass rate lift</span>
+          </div>
+        </div>
+
+        <!-- Item 4 -->
+        <div class="opt-action-card border-yellow">
+          <div class="act-title">🎯 Priority scenario: SCIM - Identity - 'how to'</div>
+          <p class="act-detail">Risk score 26.9/10 — 3,173 failing on Relevance, 0 case failures out of 3,540 cases. Weakest metric: Groundedness (0/5).</p>
+          <div class="opt-action-box">
+            <div class="box-label">Recommended Action</div>
+            <p>Create dedicated knowledge articles for SCIM - Identity - 'how to'. Add scenario-specific prompt guardrails.</p>
+          </div>
+          <div class="opt-impact">
+            <span class="opt-badge opt-badge-purple">589 cases affected</span>
+            <span class="opt-badge opt-badge-green">+2.5% pass rate lift</span>
+          </div>
+        </div>
+
+        <!-- Item 5 -->
+        <div class="opt-action-card border-yellow">
+          <div class="act-title">🎯 Priority scenario: SCIM - Intune - 'how to'</div>
+          <p class="act-detail">Risk score 26.9/10 — 2,500 failing on Relevance, 0 case failures out of 2,790 cases. Weakest metric: Groundedness (0/5).</p>
+          <div class="opt-action-box">
+            <div class="box-label">Recommended Action</div>
+            <p>Create dedicated knowledge articles for SCIM - Intune - 'how to'. Add scenario-specific prompt guardrails.</p>
+          </div>
+          <div class="opt-impact">
+            <span class="opt-badge opt-badge-purple">465 cases affected</span>
+            <span class="opt-badge opt-badge-green">+2.0% pass rate lift</span>
+          </div>
+        </div>
+
+        <!-- Item 6 -->
+        <div class="opt-action-card border-blue">
+          <div class="act-title">🚨 13,201 failing case(s) were NOT escalated</div>
+          <p class="act-detail">These cases failed without triggering human escalation. The agent may have confidently delivered subpar responses.</p>
+          <div class="opt-action-box">
+            <div class="box-label">Recommended Action</div>
+            <p>Add confidence scoring to the agent pipeline. When retrieval scores are low or groundedness is below threshold, automatically escalate rather than answering.</p>
+          </div>
+          <div class="opt-impact">
+            <span class="opt-badge opt-badge-purple">2,384 cases affected</span>
+            <span class="opt-badge opt-badge-green">+0.2% pass rate lift</span>
+          </div>
+        </div>
+
+        <!-- Item 7 -->
+        <div class="opt-action-card border-green">
+          <div class="act-title">📚 Expand knowledge base for weak scenarios</div>
+          <p class="act-detail">ACTNow Error, Case Summary have the lowest quality scores. The agent likely lacks sufficient documentation for these complex operations.</p>
+          <div class="opt-action-box">
+            <div class="box-label">Recommended Action</div>
+            <p>1) Audit existing KB articles for error resolution procedures. 2) Add step-by-step troubleshooting guides. 3) Include common error codes and their solutions.</p>
+          </div>
+          <div class="opt-impact">
+            <span class="opt-badge opt-badge-purple">201 cases affected</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Improvement Targets -->
+      <div class="opt-section">
+        <h3>📈 Improvement Targets</h3>
+        <p class="opt-subtitle">Target scores based on what passing cases achieve. Close these gaps to improve performance.</p>
+
+        <table class="opt-targets-table">
+          <thead>
+            <tr><th>Metric</th><th>Current</th><th>Target</th><th>Gap</th><th style="min-width:140px">Progress</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Relevance</td><td>2.77</td><td>4.0</td><td class="opt-gap-yellow">1.23</td>
+              <td><div class="opt-bar-track"><div class="opt-bar-fill" style="width:69.25%"></div></div></td>
+            </tr>
+            <tr>
+              <td>Coherence</td><td>3.11</td><td>4.0</td><td class="opt-gap-yellow">0.89</td>
+              <td><div class="opt-bar-track"><div class="opt-bar-fill" style="width:77.75%"></div></div></td>
+            </tr>
+            <tr>
+              <td>Fluency</td><td>3.26</td><td>4.0</td><td class="opt-gap-yellow">0.74</td>
+              <td><div class="opt-bar-track"><div class="opt-bar-fill" style="width:81.5%"></div></div></td>
+            </tr>
+            <tr>
+              <td>Groundedness</td><td>0.00</td><td>4.0</td><td class="opt-gap-red">4.00</td>
+              <td><div class="opt-bar-track"><div class="opt-bar-fill" style="width:0%"></div></div></td>
+            </tr>
+            <tr>
+              <td>Retrieval</td><td>0.00</td><td>4.0</td><td class="opt-gap-red">4.00</td>
+              <td><div class="opt-bar-track"><div class="opt-bar-fill" style="width:0%"></div></div></td>
+            </tr>
+            <tr>
+              <td>Completeness</td><td>0.00</td><td>4.0</td><td class="opt-gap-red">4.00</td>
+              <td><div class="opt-bar-track"><div class="opt-bar-fill" style="width:0%"></div></div></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+    </div>
+  </div><!-- end tab-optimizer -->
 
 </div><!-- end root -->
 
