@@ -1,0 +1,1173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Microsoft Frontier | Agentic Platform</title>
+<style>
+  :root {
+    --bg: #fff;
+    --bg2: #fafafa;
+    --bg3: #f5f5f5;
+    --stroke: #e0e0e0;
+    --fg1: #1a1a1a;
+    --fg3: #707070;
+    --fg4: #94a3b8;
+    --brand: #0078d4;
+    --green: #107c10;
+    --red: #d13438;
+    --orange: #ffaa44;
+    --teal: #038387;
+    --purple: #8764b8;
+    --yellow: #c19c00;
+    --navy: #1b1464;
+    --pink: #b4009e;
+    --shadow4: 0 2px 4px rgba(0,0,0,.04);
+    --shadow8: 0 2px 8px rgba(0,0,0,.14);
+    --radius-xl: 8px;
+    --radius-md: 4px;
+    --greenBg: #e6f4e5;
+    --redBg: #fde7ec;
+    --yellowBg: #fff9e0;
+    --tealBg: #d6f0f0;
+    --purpleBg: #f0e6fa;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background: var(--bg2); color: var(--fg1); line-height: 1.5; min-height: 100vh; }
+  a { color: var(--brand); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+
+  .root { min-height: 100vh; background: var(--bg2); padding: 32px; max-width: 1440px; margin: 0 auto; }
+
+  /* Back Link */
+  .back-link {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-size: 14px; color: var(--fg3); cursor: pointer;
+    margin-bottom: 12px; background: none; border: none; padding: 0;
+    font-family: inherit;
+  }
+  .back-link:hover { color: var(--brand); }
+  .back-link svg { width: 16px; height: 16px; }
+
+  /* Agent Header */
+  .header { display: flex; align-items: center; gap: 16px; margin-bottom: 24px; }
+  .avatar {
+    width: 56px; height: 56px; border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    color: #fff; font-weight: 600; font-size: 18px; flex-shrink: 0;
+  }
+  .header-info { flex: 1; min-width: 0; }
+  .name-row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+  .name { font-size: 28px; font-weight: 600; }
+  .stage-tag {
+    display: inline-flex; align-items: center; gap: 4px;
+    font-size: 12px; font-weight: 600; padding: 2px 12px;
+    border-radius: 12px; border: 1.5px solid;
+  }
+  .stage-production { color: var(--green); border-color: var(--green); background: var(--greenBg); }
+  .desc { font-size: 14px; color: var(--fg3); margin-top: 4px; }
+  .owner { font-size: 13px; color: var(--fg4); margin-top: 2px; }
+
+  /* Tabs */
+  .tabs-row { border-bottom: 1px solid var(--stroke); margin-bottom: 24px; display: flex; gap: 0; }
+  .tab-btn {
+    font-size: 14px; font-weight: 600; padding: 12px 20px;
+    border: none; background: none; cursor: pointer;
+    color: var(--fg3); border-bottom: 2px solid transparent;
+    font-family: inherit; transition: color .12s;
+  }
+  .tab-btn:hover { color: var(--fg1); }
+  .tab-btn.active { color: var(--brand); border-bottom-color: var(--brand); }
+  .tab-panel { display: none; }
+  .tab-panel.active { display: block; }
+
+  /* Date Row */
+  .date-row { display: flex; align-items: center; gap: 12px; margin-bottom: 24px; }
+  .date-picker {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 6px 14px; border: 1px solid var(--stroke); border-radius: var(--radius-md);
+    font-size: 13px; background: var(--bg); cursor: pointer;
+  }
+  .date-picker svg { width: 16px; height: 16px; color: var(--fg3); }
+  .date-to { font-size: 13px; color: var(--fg3); }
+
+  /* Score Cards */
+  .score-cards-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 20px; }
+  .score-card {
+    background: var(--bg); border: 1px solid var(--stroke); border-radius: var(--radius-xl);
+    padding: 16px; box-shadow: var(--shadow4); min-width: 200px;
+  }
+  .sc-header { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+  .sc-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+  .sc-label { font-size: 12px; font-weight: 600; color: var(--fg3); }
+  .sc-value { font-size: 30px; font-weight: 600; line-height: 1.1; margin-bottom: 4px; }
+  .sc-delta { font-size: 12px; font-weight: 600; display: inline-flex; align-items: center; gap: 3px; margin-bottom: 6px; }
+  .delta-pos { color: var(--green); }
+  .delta-neg { color: var(--red); }
+  .delta-neutral { color: var(--fg4); }
+  .sc-desc { font-size: 12px; color: var(--fg3); }
+  .sc-sub { font-size: 11px; color: var(--fg4); }
+
+  /* KPI Row */
+  .kpi-row { display: flex; flex-wrap: wrap; gap: 16px; margin-bottom: 20px; }
+  .kpi-card {
+    background: var(--bg); border: 1px solid var(--stroke); border-radius: var(--radius-xl);
+    padding: 16px; flex: 1 1 0; min-width: 160px; box-shadow: var(--shadow4);
+    display: flex; flex-direction: column; gap: 2px;
+  }
+  .kpi-title { font-size: 12px; font-weight: 600; color: var(--brand); }
+  .kpi-value { font-size: 28px; font-weight: 600; color: var(--fg1); line-height: 1.1; }
+  .kpi-delta { font-size: 12px; font-weight: 600; display: inline-flex; align-items: center; gap: 3px; }
+
+  /* Chart Row */
+  .chart-row { display: grid; gap: 16px; margin-bottom: 20px; }
+  .chart-row-3 { grid-template-columns: repeat(3, 1fr); }
+  .chart-row-2 { grid-template-columns: repeat(2, 1fr); }
+  .chart-card {
+    background: var(--bg); border: 1px solid var(--stroke); border-radius: var(--radius-xl);
+    padding: 16px; box-shadow: var(--shadow4);
+  }
+  .chart-title { font-size: 14px; font-weight: 600; margin-bottom: 12px; }
+  .chart-area { width: 100%; height: 180px; }
+  .chart-area svg { width: 100%; height: 100%; }
+  .chart-legend { display: flex; gap: 16px; margin-top: 8px; font-size: 11px; color: var(--fg3); flex-wrap: wrap; }
+  .legend-item { display: flex; align-items: center; gap: 5px; }
+  .legend-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+
+  /* Case Table */
+  .case-section {
+    background: var(--bg); border: 1px solid var(--stroke); border-radius: var(--radius-xl);
+    box-shadow: var(--shadow8); overflow: hidden; margin-bottom: 20px;
+  }
+  .case-header { padding: 14px 20px; font-size: 14px; font-weight: 600; border-bottom: 1px solid var(--stroke); }
+  .case-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  .case-table th {
+    padding: 10px 16px; font-weight: 700; font-size: 11px; letter-spacing: .04em;
+    color: var(--fg3); text-align: left; background: var(--bg3); border-bottom: 1px solid var(--stroke);
+    text-transform: uppercase;
+  }
+  .case-table td { padding: 10px 16px; border-bottom: 1px solid var(--stroke); }
+  .case-table tr:hover td { background: var(--bg2); }
+
+  /* Scorecard Tab */
+  .scorecard-section {
+    background: var(--bg); border: 1px solid var(--stroke); border-radius: var(--radius-xl);
+    box-shadow: var(--shadow8); overflow: hidden; margin-bottom: 20px;
+  }
+  .scorecard-header { display: flex; align-items: center; gap: 8px; padding: 14px 20px; border-bottom: 1px solid var(--stroke); }
+  .scorecard-title { font-size: 16px; font-weight: 600; }
+  .scorecard-toggle { margin-left: auto; display: flex; align-items: center; gap: 16px; font-size: 13px; }
+  .scorecard-toggle label { display: flex; align-items: center; gap: 6px; cursor: pointer; color: var(--fg3); }
+  .scorecard-toggle input[type="radio"] { accent-color: var(--brand); }
+  .scorecard-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  .scorecard-table th {
+    padding: 10px 20px; font-weight: 700; font-size: 11px; letter-spacing: .04em;
+    color: var(--fg3); text-align: left; border: 1px solid var(--stroke);
+    background: var(--bg3); white-space: nowrap; text-transform: uppercase;
+  }
+  .scorecard-table td {
+    padding: 10px 20px; border: 1px solid var(--stroke); vertical-align: top;
+    color: var(--fg1); line-height: 1.4;
+  }
+  .td-category { font-weight: 600; background: var(--bg3); }
+  .td-metric { color: var(--brand); font-weight: 500; }
+  .td-definition { color: var(--fg3); font-size: 12px; }
+  .td-value { text-align: right; font-weight: 600; }
+
+  /* Shadow Banner */
+  .shadow-banner {
+    background: linear-gradient(135deg, var(--tealBg) 0%, #e8f6f6 100%);
+    border: 1px solid var(--teal); border-radius: var(--radius-xl);
+    padding: 14px 20px; margin-bottom: 20px; display: flex;
+    align-items: flex-start; gap: 12px;
+  }
+  .shadow-banner-icon { font-size: 20px; flex-shrink: 0; }
+  .shadow-banner h3 { font-size: 13px; font-weight: 600; color: var(--teal); margin-bottom: 3px; }
+  .shadow-banner p { font-size: 12px; color: var(--fg3); line-height: 1.5; }
+
+  /* Shadow 5-col score cards */
+  .score-cards-5 { display: grid; grid-template-columns: repeat(5, 1fr); gap: 0; margin-bottom: 20px;
+    background: var(--bg); border: 1px solid var(--stroke); border-radius: var(--radius-xl); box-shadow: var(--shadow8); overflow: hidden; }
+  .score-cards-5 .score-card { border: none; border-radius: 0; box-shadow: none; }
+  .score-cards-5 .score-card:not(:first-child) { border-left: 1px solid var(--stroke); }
+  .score-cards-footer { display: flex; align-items: center; gap: 24px; padding: 10px 20px; border-top: 1px solid var(--stroke); background: var(--bg3); font-size: 12px; color: var(--fg3); }
+
+  /* Pie mini */
+  .pie-mini { display: flex; align-items: center; gap: 16px; }
+  .pie-legend-list { display: flex; flex-direction: column; gap: 4px; font-size: 12px; }
+  .pie-legend-item { display: flex; align-items: center; gap: 6px; }
+  .pie-swatch { width: 10px; height: 10px; border-radius: 2px; flex-shrink: 0; }
+
+  /* Flow diagram */
+  .flow-section { background: var(--bg); border: 1px solid var(--stroke); border-radius: var(--radius-xl); box-shadow: var(--shadow8); overflow: hidden; margin-bottom: 20px; }
+  .flow-header { padding: 14px 20px; font-size: 14px; font-weight: 600; border-bottom: 1px solid var(--stroke); display: flex; align-items: center; gap: 8px; }
+
+  .score-badge { display: inline-block; padding: 2px 8px; border-radius: var(--radius-md); font-size: 12px; font-weight: 600; min-width: 2.5rem; text-align: center; }
+  .badge-pass { background: var(--greenBg); color: var(--green); }
+
+  @media (max-width: 1100px) {
+    .chart-row-3 { grid-template-columns: 1fr; }
+    .chart-row-2 { grid-template-columns: 1fr; }
+    .score-cards-row { grid-template-columns: 1fr 1fr; }
+    .score-cards-5 { grid-template-columns: repeat(3, 1fr); }
+  }
+  @media (max-width: 768px) {
+    .root { padding: 16px; }
+    .score-cards-row { grid-template-columns: 1fr; }
+    .kpi-row { flex-direction: column; }
+    .score-cards-5 { grid-template-columns: 1fr 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<div class="root">
+
+  <!-- Back Link -->
+  <button class="back-link" onclick="window.history.back()">
+    <svg viewBox="0 0 20 20" fill="currentColor"><path d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z"/></svg>
+    Back to all agents
+  </button>
+
+  <!-- Agent Header -->
+  <div class="header">
+    <div class="avatar" style="background:var(--teal)">BA</div>
+    <div class="header-info">
+      <div class="name-row">
+        <h1 class="name">BizApps Agent</h1>
+        <span class="stage-tag stage-production">● Production</span>
+      </div>
+      <p class="desc">BizApps Solution Agent processing support cases via Shim pipeline — Licensing, Throttling, and Approvals scenarios.</p>
+      <p class="owner">Owner: Support Engineering</p>
+    </div>
+  </div>
+
+  <!-- Date Row -->
+  <div class="date-row">
+    <div class="date-picker">
+      <svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zM4 8h12v8H4V8z" clip-rule="evenodd"/></svg>
+      Sat, Mar 01, 2026
+    </div>
+    <span class="date-to">to</span>
+    <div class="date-picker">
+      <svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zM4 8h12v8H4V8z" clip-rule="evenodd"/></svg>
+      Sun, Mar 31, 2026
+    </div>
+  </div>
+
+  <!-- Tab Bar -->
+  <div class="tabs-row" id="tabBar">
+    <button class="tab-btn active" data-tab="overview">Overview</button>
+    <button class="tab-btn" data-tab="scorecard">Scorecard</button>
+    <button class="tab-btn" data-tab="shadow-metrics">Shadow Metrics</button>
+  </div>
+
+  <!-- ==================== TAB: OVERVIEW ==================== -->
+  <div class="tab-panel active" id="tab-overview">
+
+    <!-- Score Cards Row -->
+    <div class="score-cards-row">
+      <div class="score-card">
+        <div class="sc-header"><span class="sc-dot" style="background:var(--green)"></span><span class="sc-label">Accuracy</span></div>
+        <div class="sc-value" style="color:var(--green)">82.5%</div>
+        <div class="sc-delta delta-pos">↑ 3.2% vs previous</div>
+        <div class="sc-desc">Percentage of correct responses</div>
+      </div>
+      <div class="score-card">
+        <div class="sc-header"><span class="sc-dot" style="background:var(--brand)"></span><span class="sc-label">Relevance</span></div>
+        <div class="sc-value" style="color:var(--brand)">78.3%</div>
+        <div class="sc-delta delta-neg">↓ 1.5% vs previous</div>
+        <div class="sc-desc">Response relevance to user query</div>
+      </div>
+      <div class="score-card">
+        <div class="sc-header"><span class="sc-dot" style="background:var(--teal)"></span><span class="sc-label">Deflection Rate</span></div>
+        <div class="sc-value" style="color:var(--teal)">71.8%</div>
+        <div class="sc-delta delta-pos">↑ 5.1% vs previous</div>
+        <div class="sc-desc">Cases resolved without human agent</div>
+      </div>
+    </div>
+
+    <!-- KPI Row 1 -->
+    <div class="kpi-row">
+      <div class="kpi-card">
+        <span class="kpi-title">Case Volume</span>
+        <span class="kpi-value">3,247</span>
+        <span class="kpi-delta delta-pos">↑ 8.4% vs previous</span>
+      </div>
+      <div class="kpi-card">
+        <span class="kpi-title">Human Escalation Rate</span>
+        <span class="kpi-value">28.2%</span>
+        <span class="kpi-delta delta-neg">↑ 1.2% vs previous</span>
+      </div>
+      <div class="kpi-card">
+        <span class="kpi-title">Days to Close (DTC)</span>
+        <span class="kpi-value">4.35 days</span>
+        <span class="kpi-delta delta-pos">↓ 0.8 days vs previous</span>
+      </div>
+    </div>
+
+    <!-- KPI Row 2 -->
+    <div class="kpi-row">
+      <div class="kpi-card">
+        <span class="kpi-title">Time to First Content</span>
+        <span class="kpi-value">2.3 sec</span>
+        <span class="kpi-delta delta-pos">↓ 0.4s vs previous</span>
+      </div>
+      <div class="kpi-card">
+        <span class="kpi-title">Time to Last Content</span>
+        <span class="kpi-value">8.7 sec</span>
+        <span class="kpi-delta delta-neutral">— No change</span>
+      </div>
+      <div class="kpi-card">
+        <span class="kpi-title">Failure Rate</span>
+        <span class="kpi-value">3.2%</span>
+        <span class="kpi-delta delta-pos">↓ 0.5% vs previous</span>
+      </div>
+      <div class="kpi-card">
+        <span class="kpi-title">System Availability</span>
+        <span class="kpi-value">99.1%</span>
+        <span class="kpi-delta delta-pos">↑ 0.2% vs previous</span>
+      </div>
+    </div>
+
+    <!-- Chart Row 1: 3-col quality charts -->
+    <div class="chart-row chart-row-3">
+      <div class="chart-card">
+        <div class="chart-title">Response Content Quality (%)</div>
+        <div class="chart-area">
+          <svg viewBox="0 0 400 160" preserveAspectRatio="none">
+            <line x1="40" y1="20" x2="380" y2="20" stroke="#e0e0e0" stroke-width="1" stroke-dasharray="4,3"/>
+            <line x1="40" y1="50" x2="380" y2="50" stroke="#e0e0e0" stroke-width="1" stroke-dasharray="4,3"/>
+            <line x1="40" y1="80" x2="380" y2="80" stroke="#e0e0e0" stroke-width="1" stroke-dasharray="4,3"/>
+            <line x1="40" y1="110" x2="380" y2="110" stroke="#e0e0e0" stroke-width="1" stroke-dasharray="4,3"/>
+            <line x1="40" y1="140" x2="380" y2="140" stroke="#e0e0e0" stroke-width="1"/>
+            <text x="36" y="24" text-anchor="end" font-size="9" fill="#94a3b8">100</text>
+            <text x="36" y="54" text-anchor="end" font-size="9" fill="#94a3b8">80</text>
+            <text x="36" y="84" text-anchor="end" font-size="9" fill="#94a3b8">60</text>
+            <text x="36" y="144" text-anchor="end" font-size="9" fill="#94a3b8">0</text>
+            <text x="90" y="155" text-anchor="middle" font-size="9" fill="#94a3b8">Oct</text>
+            <text x="150" y="155" text-anchor="middle" font-size="9" fill="#94a3b8">Nov</text>
+            <text x="210" y="155" text-anchor="middle" font-size="9" fill="#94a3b8">Dec</text>
+            <text x="270" y="155" text-anchor="middle" font-size="9" fill="#94a3b8">Jan</text>
+            <text x="330" y="155" text-anchor="middle" font-size="9" fill="#94a3b8">Feb</text>
+            <text x="370" y="155" text-anchor="middle" font-size="9" fill="#94a3b8">Mar</text>
+            <!-- Accuracy (green) -->
+            <polyline points="60,55 120,50 180,48 240,42 300,40 360,35" fill="none" stroke="#107c10" stroke-width="2"/>
+            <!-- Groundedness (blue) -->
+            <polyline points="60,62 120,58 180,55 240,52 300,50 360,48" fill="none" stroke="#0078d4" stroke-width="2"/>
+            <!-- Coherence (orange) -->
+            <polyline points="60,50 120,48 180,45 240,42 300,40 360,38" fill="none" stroke="#ffaa44" stroke-width="2"/>
+          </svg>
+        </div>
+        <div class="chart-legend">
+          <span class="legend-item"><span class="legend-dot" style="background:var(--green)"></span>Accuracy</span>
+          <span class="legend-item"><span class="legend-dot" style="background:var(--brand)"></span>Groundedness</span>
+          <span class="legend-item"><span class="legend-dot" style="background:var(--orange)"></span>Coherence</span>
+        </div>
+      </div>
+
+      <div class="chart-card">
+        <div class="chart-title">Response Delivery Quality (%)</div>
+        <div class="chart-area">
+          <svg viewBox="0 0 400 160" preserveAspectRatio="none">
+            <line x1="40" y1="20" x2="380" y2="20" stroke="#e0e0e0" stroke-width="1" stroke-dasharray="4,3"/>
+            <line x1="40" y1="50" x2="380" y2="50" stroke="#e0e0e0" stroke-width="1" stroke-dasharray="4,3"/>
+            <line x1="40" y1="80" x2="380" y2="80" stroke="#e0e0e0" stroke-width="1" stroke-dasharray="4,3"/>
+            <line x1="40" y1="110" x2="380" y2="110" stroke="#e0e0e0" stroke-width="1" stroke-dasharray="4,3"/>
+            <line x1="40" y1="140" x2="380" y2="140" stroke="#e0e0e0" stroke-width="1"/>
+            <text x="36" y="24" text-anchor="end" font-size="9" fill="#94a3b8">100</text>
+            <text x="36" y="54" text-anchor="end" font-size="9" fill="#94a3b8">80</text>
+            <text x="36" y="84" text-anchor="end" font-size="9" fill="#94a3b8">60</text>
+            <text x="36" y="144" text-anchor="end" font-size="9" fill="#94a3b8">0</text>
+            <text x="90" y="155" text-anchor="middle" font-size="9" fill="#94a3b8">Oct</text>
+            <text x="150" y="155" text-anchor="middle" font-size="9" fill="#94a3b8">Nov</text>
+            <text x="210" y="155" text-anchor="middle" font-size="9" fill="#94a3b8">Dec</text>
+            <text x="270" y="155" text-anchor="middle" font-size="9" fill="#94a3b8">Jan</text>
+            <text x="330" y="155" text-anchor="middle" font-size="9" fill="#94a3b8">Feb</text>
+            <text x="370" y="155" text-anchor="middle" font-size="9" fill="#94a3b8">Mar</text>
+            <!-- Fluency (purple) -->
+            <polyline points="60,42 120,40 180,38 240,36 300,34 360,32" fill="none" stroke="#8764b8" stroke-width="2"/>
+            <!-- Retrieval (teal) -->
+            <polyline points="60,65 120,60 180,58 240,55 300,52 360,50" fill="none" stroke="#038387" stroke-width="2"/>
+          </svg>
+        </div>
+        <div class="chart-legend">
+          <span class="legend-item"><span class="legend-dot" style="background:var(--purple)"></span>Fluency</span>
+          <span class="legend-item"><span class="legend-dot" style="background:var(--teal)"></span>Retrieval</span>
+        </div>
+      </div>
+
+      <div class="chart-card">
+        <div class="chart-title">Responsible AI (%)</div>
+        <div class="chart-area">
+          <svg viewBox="0 0 400 160" preserveAspectRatio="none">
+            <line x1="40" y1="20" x2="380" y2="20" stroke="#e0e0e0" stroke-width="1" stroke-dasharray="4,3"/>
+            <line x1="40" y1="50" x2="380" y2="50" stroke="#e0e0e0" stroke-width="1" stroke-dasharray="4,3"/>
+            <line x1="40" y1="80" x2="380" y2="80" stroke="#e0e0e0" stroke-width="1" stroke-dasharray="4,3"/>
+            <line x1="40" y1="110" x2="380" y2="110" stroke="#e0e0e0" stroke-width="1" stroke-dasharray="4,3"/>
+            <line x1="40" y1="140" x2="380" y2="140" stroke="#e0e0e0" stroke-width="1"/>
+            <text x="36" y="24" text-anchor="end" font-size="9" fill="#94a3b8">1.0</text>
+            <text x="36" y="54" text-anchor="end" font-size="9" fill="#94a3b8">0.5</text>
+            <text x="36" y="84" text-anchor="end" font-size="9" fill="#94a3b8">0.25</text>
+            <text x="36" y="144" text-anchor="end" font-size="9" fill="#94a3b8">0</text>
+            <text x="90" y="155" text-anchor="middle" font-size="9" fill="#94a3b8">Oct</text>
+            <text x="150" y="155" text-anchor="middle" font-size="9" fill="#94a3b8">Nov</text>
+            <text x="210" y="155" text-anchor="middle" font-size="9" fill="#94a3b8">Dec</text>
+            <text x="270" y="155" text-anchor="middle" font-size="9" fill="#94a3b8">Jan</text>
+            <text x="330" y="155" text-anchor="middle" font-size="9" fill="#94a3b8">Feb</text>
+            <text x="370" y="155" text-anchor="middle" font-size="9" fill="#94a3b8">Mar</text>
+            <!-- Hateful (red) - very low -->
+            <polyline points="60,133 120,135 180,134 240,136 300,135 360,134" fill="none" stroke="#d13438" stroke-width="2"/>
+            <!-- Self-harm (orange) - zero -->
+            <polyline points="60,140 120,140 180,140 240,140 300,140 360,140" fill="none" stroke="#ffaa44" stroke-width="2"/>
+            <!-- Sexual (purple) -->
+            <polyline points="60,137 120,138 180,137 240,138 300,137 360,138" fill="none" stroke="#8764b8" stroke-width="2"/>
+            <!-- Violent (navy) - zero -->
+            <polyline points="60,140 120,140 180,140 240,140 300,140 360,140" fill="none" stroke="#1b1464" stroke-width="1.5"/>
+          </svg>
+        </div>
+        <div class="chart-legend">
+          <span class="legend-item"><span class="legend-dot" style="background:var(--red)"></span>Hateful/Unfair</span>
+          <span class="legend-item"><span class="legend-dot" style="background:var(--orange)"></span>Self-Harm</span>
+          <span class="legend-item"><span class="legend-dot" style="background:var(--purple)"></span>Sexual</span>
+          <span class="legend-item"><span class="legend-dot" style="background:var(--navy)"></span>Violent</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Chart Row 2: 2-col -->
+    <div class="chart-row chart-row-2">
+      <div class="chart-card">
+        <div class="chart-title">Task Completion Rates (%)</div>
+        <div class="chart-area">
+          <svg viewBox="0 0 400 160" preserveAspectRatio="none">
+            <line x1="40" y1="20" x2="380" y2="20" stroke="#e0e0e0" stroke-width="1" stroke-dasharray="4,3"/>
+            <line x1="40" y1="50" x2="380" y2="50" stroke="#e0e0e0" stroke-width="1" stroke-dasharray="4,3"/>
+            <line x1="40" y1="80" x2="380" y2="80" stroke="#e0e0e0" stroke-width="1" stroke-dasharray="4,3"/>
+            <line x1="40" y1="110" x2="380" y2="110" stroke="#e0e0e0" stroke-width="1" stroke-dasharray="4,3"/>
+            <line x1="40" y1="140" x2="380" y2="140" stroke="#e0e0e0" stroke-width="1"/>
+            <text x="36" y="24" text-anchor="end" font-size="9" fill="#94a3b8">100</text>
+            <text x="36" y="54" text-anchor="end" font-size="9" fill="#94a3b8">75</text>
+            <text x="36" y="84" text-anchor="end" font-size="9" fill="#94a3b8">50</text>
+            <text x="36" y="114" text-anchor="end" font-size="9" fill="#94a3b8">25</text>
+            <text x="36" y="144" text-anchor="end" font-size="9" fill="#94a3b8">0</text>
+            <text x="90" y="155" text-anchor="middle" font-size="9" fill="#94a3b8">Oct</text>
+            <text x="150" y="155" text-anchor="middle" font-size="9" fill="#94a3b8">Nov</text>
+            <text x="210" y="155" text-anchor="middle" font-size="9" fill="#94a3b8">Dec</text>
+            <text x="270" y="155" text-anchor="middle" font-size="9" fill="#94a3b8">Jan</text>
+            <text x="330" y="155" text-anchor="middle" font-size="9" fill="#94a3b8">Feb</text>
+            <text x="370" y="155" text-anchor="middle" font-size="9" fill="#94a3b8">Mar</text>
+            <!-- Intent Resolution (green) -->
+            <polyline points="60,60 120,55 180,50 240,48 300,42 360,38" fill="none" stroke="#107c10" stroke-width="2"/>
+            <!-- Deflection (blue) -->
+            <polyline points="60,72 120,68 180,62 240,58 300,52 360,46" fill="none" stroke="#0078d4" stroke-width="2"/>
+            <!-- Escalation (red) - lower is better -->
+            <polyline points="60,100 120,102 180,98 240,96 300,94 360,92" fill="none" stroke="#d13438" stroke-width="2"/>
+          </svg>
+        </div>
+        <div class="chart-legend">
+          <span class="legend-item"><span class="legend-dot" style="background:var(--green)"></span>Intent Resolution</span>
+          <span class="legend-item"><span class="legend-dot" style="background:var(--brand)"></span>Deflection Rate</span>
+          <span class="legend-item"><span class="legend-dot" style="background:var(--red)"></span>Escalation Rate</span>
+        </div>
+      </div>
+
+      <div class="chart-card">
+        <div class="chart-title">Turn Count &amp; Goal Completion Time</div>
+        <div class="chart-area">
+          <svg viewBox="0 0 400 160" preserveAspectRatio="none">
+            <line x1="40" y1="20" x2="380" y2="20" stroke="#e0e0e0" stroke-width="1" stroke-dasharray="4,3"/>
+            <line x1="40" y1="50" x2="380" y2="50" stroke="#e0e0e0" stroke-width="1" stroke-dasharray="4,3"/>
+            <line x1="40" y1="80" x2="380" y2="80" stroke="#e0e0e0" stroke-width="1" stroke-dasharray="4,3"/>
+            <line x1="40" y1="110" x2="380" y2="110" stroke="#e0e0e0" stroke-width="1" stroke-dasharray="4,3"/>
+            <line x1="40" y1="140" x2="380" y2="140" stroke="#e0e0e0" stroke-width="1"/>
+            <text x="36" y="24" text-anchor="end" font-size="9" fill="#94a3b8">12</text>
+            <text x="36" y="54" text-anchor="end" font-size="9" fill="#94a3b8">8</text>
+            <text x="36" y="84" text-anchor="end" font-size="9" fill="#94a3b8">4</text>
+            <text x="36" y="144" text-anchor="end" font-size="9" fill="#94a3b8">0</text>
+            <text x="90" y="155" text-anchor="middle" font-size="9" fill="#94a3b8">Oct</text>
+            <text x="150" y="155" text-anchor="middle" font-size="9" fill="#94a3b8">Nov</text>
+            <text x="210" y="155" text-anchor="middle" font-size="9" fill="#94a3b8">Dec</text>
+            <text x="270" y="155" text-anchor="middle" font-size="9" fill="#94a3b8">Jan</text>
+            <text x="330" y="155" text-anchor="middle" font-size="9" fill="#94a3b8">Feb</text>
+            <text x="370" y="155" text-anchor="middle" font-size="9" fill="#94a3b8">Mar</text>
+            <!-- Bars (turn count) -->
+            <rect x="72" y="70" width="36" height="70" fill="#0078d4" opacity="0.3" rx="2"/>
+            <rect x="132" y="65" width="36" height="75" fill="#0078d4" opacity="0.3" rx="2"/>
+            <rect x="192" y="60" width="36" height="80" fill="#0078d4" opacity="0.3" rx="2"/>
+            <rect x="252" y="72" width="36" height="68" fill="#0078d4" opacity="0.3" rx="2"/>
+            <rect x="312" y="68" width="36" height="72" fill="#0078d4" opacity="0.3" rx="2"/>
+            <rect x="352" y="75" width="36" height="65" fill="#0078d4" opacity="0.3" rx="2"/>
+            <!-- Line (completion time) -->
+            <polyline points="90,55 150,50 210,45 270,48 330,42 370,40" fill="none" stroke="#ffaa44" stroke-width="2.5"/>
+          </svg>
+        </div>
+        <div class="chart-legend">
+          <span class="legend-item"><span class="legend-dot" style="background:var(--brand);opacity:.3"></span>Avg Turn Count</span>
+          <span class="legend-item"><span class="legend-dot" style="background:var(--orange)"></span>Goal Completion Time (min)</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Chart Row 3: 3-col -->
+    <div class="chart-row chart-row-3">
+      <div class="chart-card">
+        <div class="chart-title">Time to Case Closure (Days)</div>
+        <div class="chart-area">
+          <svg viewBox="0 0 400 160" preserveAspectRatio="none">
+            <line x1="40" y1="20" x2="380" y2="20" stroke="#e0e0e0" stroke-width="1" stroke-dasharray="4,3"/>
+            <line x1="40" y1="80" x2="380" y2="80" stroke="#e0e0e0" stroke-width="1" stroke-dasharray="4,3"/>
+            <line x1="40" y1="140" x2="380" y2="140" stroke="#e0e0e0" stroke-width="1"/>
+            <text x="36" y="24" text-anchor="end" font-size="9" fill="#94a3b8">10</text>
+            <text x="36" y="84" text-anchor="end" font-size="9" fill="#94a3b8">5</text>
+            <text x="36" y="144" text-anchor="end" font-size="9" fill="#94a3b8">0</text>
+            <text x="90" y="155" text-anchor="middle" font-size="9" fill="#94a3b8">Oct</text>
+            <text x="150" y="155" text-anchor="middle" font-size="9" fill="#94a3b8">Nov</text>
+            <text x="210" y="155" text-anchor="middle" font-size="9" fill="#94a3b8">Dec</text>
+            <text x="270" y="155" text-anchor="middle" font-size="9" fill="#94a3b8">Jan</text>
+            <text x="330" y="155" text-anchor="middle" font-size="9" fill="#94a3b8">Feb</text>
+            <text x="370" y="155" text-anchor="middle" font-size="9" fill="#94a3b8">Mar</text>
+            <polyline points="60,68 120,62 180,58 240,55 300,50 360,48" fill="none" stroke="#038387" stroke-width="2.5"/>
+            <polygon points="60,68 120,62 180,58 240,55 300,50 360,48 360,140 60,140" fill="#038387" opacity="0.06"/>
+          </svg>
+        </div>
+        <div class="chart-legend">
+          <span class="legend-item"><span class="legend-dot" style="background:var(--teal)"></span>Avg Days to Close</span>
+        </div>
+      </div>
+
+      <div class="chart-card">
+        <div class="chart-title">Case Throughput</div>
+        <div class="chart-area">
+          <svg viewBox="0 0 400 160" preserveAspectRatio="none">
+            <line x1="40" y1="20" x2="380" y2="20" stroke="#e0e0e0" stroke-width="1" stroke-dasharray="4,3"/>
+            <line x1="40" y1="80" x2="380" y2="80" stroke="#e0e0e0" stroke-width="1" stroke-dasharray="4,3"/>
+            <line x1="40" y1="140" x2="380" y2="140" stroke="#e0e0e0" stroke-width="1"/>
+            <text x="36" y="24" text-anchor="end" font-size="9" fill="#94a3b8">800</text>
+            <text x="36" y="84" text-anchor="end" font-size="9" fill="#94a3b8">400</text>
+            <text x="36" y="144" text-anchor="end" font-size="9" fill="#94a3b8">0</text>
+            <text x="90" y="155" text-anchor="middle" font-size="9" fill="#94a3b8">Oct</text>
+            <text x="150" y="155" text-anchor="middle" font-size="9" fill="#94a3b8">Nov</text>
+            <text x="210" y="155" text-anchor="middle" font-size="9" fill="#94a3b8">Dec</text>
+            <text x="270" y="155" text-anchor="middle" font-size="9" fill="#94a3b8">Jan</text>
+            <text x="330" y="155" text-anchor="middle" font-size="9" fill="#94a3b8">Feb</text>
+            <text x="370" y="155" text-anchor="middle" font-size="9" fill="#94a3b8">Mar</text>
+            <rect x="72" y="88" width="36" height="52" fill="#0078d4" rx="2"/>
+            <rect x="132" y="72" width="36" height="68" fill="#0078d4" rx="2"/>
+            <rect x="192" y="60" width="36" height="80" fill="#0078d4" rx="2"/>
+            <rect x="252" y="52" width="36" height="88" fill="#0078d4" rx="2"/>
+            <rect x="312" y="44" width="36" height="96" fill="#0078d4" rx="2"/>
+            <rect x="352" y="38" width="36" height="102" fill="#0078d4" rx="2"/>
+          </svg>
+        </div>
+        <div class="chart-legend">
+          <span class="legend-item"><span class="legend-dot" style="background:var(--brand)"></span>Cases Processed</span>
+        </div>
+      </div>
+
+      <div class="chart-card">
+        <div class="chart-title">CSAT &amp; DSAT Rate (%)</div>
+        <div class="chart-area">
+          <svg viewBox="0 0 400 160" preserveAspectRatio="none">
+            <line x1="40" y1="20" x2="380" y2="20" stroke="#e0e0e0" stroke-width="1" stroke-dasharray="4,3"/>
+            <line x1="40" y1="50" x2="380" y2="50" stroke="#e0e0e0" stroke-width="1" stroke-dasharray="4,3"/>
+            <line x1="40" y1="80" x2="380" y2="80" stroke="#e0e0e0" stroke-width="1" stroke-dasharray="4,3"/>
+            <line x1="40" y1="110" x2="380" y2="110" stroke="#e0e0e0" stroke-width="1" stroke-dasharray="4,3"/>
+            <line x1="40" y1="140" x2="380" y2="140" stroke="#e0e0e0" stroke-width="1"/>
+            <text x="36" y="24" text-anchor="end" font-size="9" fill="#94a3b8">100</text>
+            <text x="36" y="54" text-anchor="end" font-size="9" fill="#94a3b8">75</text>
+            <text x="36" y="84" text-anchor="end" font-size="9" fill="#94a3b8">50</text>
+            <text x="36" y="114" text-anchor="end" font-size="9" fill="#94a3b8">25</text>
+            <text x="36" y="144" text-anchor="end" font-size="9" fill="#94a3b8">0</text>
+            <text x="90" y="155" text-anchor="middle" font-size="9" fill="#94a3b8">Oct</text>
+            <text x="150" y="155" text-anchor="middle" font-size="9" fill="#94a3b8">Nov</text>
+            <text x="210" y="155" text-anchor="middle" font-size="9" fill="#94a3b8">Dec</text>
+            <text x="270" y="155" text-anchor="middle" font-size="9" fill="#94a3b8">Jan</text>
+            <text x="330" y="155" text-anchor="middle" font-size="9" fill="#94a3b8">Feb</text>
+            <text x="370" y="155" text-anchor="middle" font-size="9" fill="#94a3b8">Mar</text>
+            <!-- CSAT (green) -->
+            <polyline points="60,48 120,42 180,38 240,35 300,32 360,30" fill="none" stroke="#107c10" stroke-width="2.5"/>
+            <!-- DSAT (red) -->
+            <polyline points="60,118 120,120 180,122 240,124 300,125 360,126" fill="none" stroke="#d13438" stroke-width="2"/>
+          </svg>
+        </div>
+        <div class="chart-legend">
+          <span class="legend-item"><span class="legend-dot" style="background:var(--green)"></span>CSAT</span>
+          <span class="legend-item"><span class="legend-dot" style="background:var(--red)"></span>DSAT</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Case Level Evals Details -->
+    <div class="case-section">
+      <div class="case-header">📋 Case Level Evals Details</div>
+      <table class="case-table">
+        <thead>
+          <tr>
+            <th>Case Number</th>
+            <th>Scenario</th>
+            <th>LOB</th>
+            <th>Time to First Content</th>
+            <th>Case Failed</th>
+            <th>Accuracy</th>
+            <th>Relevance</th>
+            <th>Coherence</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td style="color:var(--brand);font-weight:500">CAS-20260301-0042</td>
+            <td>Licensing</td>
+            <td>Power Platform</td>
+            <td>1.8 sec</td>
+            <td style="color:var(--green)">No</td>
+            <td style="font-weight:600">88.2%</td>
+            <td style="font-weight:600">91.0%</td>
+            <td style="font-weight:600">4.5</td>
+          </tr>
+          <tr>
+            <td style="color:var(--brand);font-weight:500">CAS-20260301-0118</td>
+            <td>Throttling</td>
+            <td>Dynamics 365</td>
+            <td>2.1 sec</td>
+            <td style="color:var(--green)">No</td>
+            <td style="font-weight:600">85.4%</td>
+            <td style="font-weight:600">82.3%</td>
+            <td style="font-weight:600">4.2</td>
+          </tr>
+          <tr>
+            <td style="color:var(--brand);font-weight:500">CAS-20260302-0205</td>
+            <td>Approvals</td>
+            <td>Power Automate</td>
+            <td>3.4 sec</td>
+            <td style="color:var(--red)">Yes</td>
+            <td style="font-weight:600">62.1%</td>
+            <td style="font-weight:600">58.8%</td>
+            <td style="font-weight:600">3.1</td>
+          </tr>
+          <tr>
+            <td style="color:var(--brand);font-weight:500">CAS-20260305-0087</td>
+            <td>Licensing</td>
+            <td>Power Apps</td>
+            <td>1.5 sec</td>
+            <td style="color:var(--green)">No</td>
+            <td style="font-weight:600">92.8%</td>
+            <td style="font-weight:600">89.4%</td>
+            <td style="font-weight:600">4.7</td>
+          </tr>
+          <tr>
+            <td style="color:var(--brand);font-weight:500">CAS-20260310-0331</td>
+            <td>Throttling</td>
+            <td>Dynamics 365</td>
+            <td>2.8 sec</td>
+            <td style="color:var(--green)">No</td>
+            <td style="font-weight:600">79.5%</td>
+            <td style="font-weight:600">76.1%</td>
+            <td style="font-weight:600">4.0</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+  </div><!-- end tab-overview -->
+
+  <!-- ==================== TAB: SCORECARD ==================== -->
+  <div class="tab-panel" id="tab-scorecard">
+
+    <div class="scorecard-section">
+      <div class="scorecard-header">
+        <span style="font-size:18px">📊</span>
+        <span class="scorecard-title">Evaluations Scorecard</span>
+        <div class="scorecard-toggle">
+          <label><input type="radio" name="sc-toggle" checked> Latest only</label>
+          <label><input type="radio" name="sc-toggle"> Last 4 runs</label>
+        </div>
+      </div>
+      <table class="scorecard-table">
+        <thead>
+          <tr>
+            <th style="width:18%">Category</th>
+            <th style="width:20%">Metrics</th>
+            <th style="width:42%">Definition</th>
+            <th style="width:20%;text-align:right">Metric Value</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- Content Quality -->
+          <tr>
+            <td class="td-category" rowspan="5">Content Quality</td>
+            <td class="td-metric">Accuracy</td>
+            <td class="td-definition">Measures the correctness of the agent's responses against ground truth</td>
+            <td class="td-value">82.5</td>
+          </tr>
+          <tr>
+            <td class="td-metric">Groundedness</td>
+            <td class="td-definition">How well responses are grounded in source knowledge base documents</td>
+            <td class="td-value">4.1</td>
+          </tr>
+          <tr>
+            <td class="td-metric">Coherence</td>
+            <td class="td-definition">Logical consistency and flow of the response</td>
+            <td class="td-value">4.3</td>
+          </tr>
+          <tr>
+            <td class="td-metric">Fluency</td>
+            <td class="td-definition">Grammatical correctness and naturalness of language</td>
+            <td class="td-value">4.5</td>
+          </tr>
+          <tr>
+            <td class="td-metric">Retrieval</td>
+            <td class="td-definition">Quality and relevance of retrieved documents used for response generation</td>
+            <td class="td-value">3.8</td>
+          </tr>
+          <!-- Responsible AI -->
+          <tr>
+            <td class="td-category" rowspan="4">Responsible AI</td>
+            <td class="td-metric">Hateful / Unfair Content</td>
+            <td class="td-definition">Percentage of responses containing hateful or discriminatory content</td>
+            <td class="td-value">0.2%</td>
+          </tr>
+          <tr>
+            <td class="td-metric">Self-Harm Content</td>
+            <td class="td-definition">Percentage of responses containing self-harm related content</td>
+            <td class="td-value">0.0%</td>
+          </tr>
+          <tr>
+            <td class="td-metric">Sexual Content</td>
+            <td class="td-definition">Percentage of responses containing sexual content</td>
+            <td class="td-value">0.1%</td>
+          </tr>
+          <tr>
+            <td class="td-metric">Violent Content</td>
+            <td class="td-definition">Percentage of responses containing violent content</td>
+            <td class="td-value">0.0%</td>
+          </tr>
+          <!-- Task Completion -->
+          <tr>
+            <td class="td-category" rowspan="3">Task Completion</td>
+            <td class="td-metric">Intent Resolution Rate</td>
+            <td class="td-definition">Percentage of conversations where the user's intent was successfully resolved</td>
+            <td class="td-value">78.4%</td>
+          </tr>
+          <tr>
+            <td class="td-metric">Customer Abandonment</td>
+            <td class="td-definition">Percentage of conversations abandoned by the customer before resolution</td>
+            <td class="td-value">12.3%</td>
+          </tr>
+          <tr>
+            <td class="td-metric">Human Escalation Rate</td>
+            <td class="td-definition">Percentage of conversations escalated to a human agent</td>
+            <td class="td-value">28.2%</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+  </div><!-- end tab-scorecard -->
+
+  <!-- ==================== TAB: SHADOW METRICS ==================== -->
+  <div class="tab-panel" id="tab-shadow-metrics">
+
+    <!-- Shadow Banner -->
+    <div class="shadow-banner">
+      <span class="shadow-banner-icon">🔍</span>
+      <div>
+        <h3>Shadow agent — observe only</h3>
+        <p>This agent processed <strong>2,018 cases</strong> via the Shim → BizAppsSolution pipeline. Of those, <strong>1,405 were AI-qualified</strong>. Shadow outputs are compared against production baselines but are never shown to end users.</p>
+      </div>
+    </div>
+
+    <!-- Score Cards (5 columns) -->
+    <div class="score-cards-5">
+      <div class="score-card">
+        <div class="sc-header"><span class="sc-dot" style="background:var(--teal)"></span><span class="sc-label">AI Qualified Cases</span></div>
+        <div class="sc-value" style="color:var(--teal)">1,405</div>
+        <div class="sc-delta delta-neutral">— Baseline period</div>
+        <div class="sc-desc">Total cases processed by shadow</div>
+        <div class="sc-sub">From Shim pipeline (2,018 routed)</div>
+      </div>
+      <div class="score-card">
+        <div class="sc-header"><span class="sc-dot" style="background:var(--green)"></span><span class="sc-label">AI Offered Solution</span></div>
+        <div class="sc-value" style="color:var(--green)">16.9%</div>
+        <div class="sc-delta delta-pos">▲ 2.3% vs previous period</div>
+        <div class="sc-desc">237 cases — shadow offered answer</div>
+        <div class="sc-sub">Target: ≥ 25%</div>
+      </div>
+      <div class="score-card">
+        <div class="sc-header"><span class="sc-dot" style="background:var(--brand)"></span><span class="sc-label">AI Requested More Info</span></div>
+        <div class="sc-value" style="color:var(--brand)">51.2%</div>
+        <div class="sc-delta delta-neg">▼ 1.8% vs previous period</div>
+        <div class="sc-desc">719 cases — needed more context</div>
+        <div class="sc-sub">Goal: reduce over time</div>
+      </div>
+      <div class="score-card">
+        <div class="sc-header"><span class="sc-dot" style="background:var(--red)"></span><span class="sc-label">AI Not Compatible</span></div>
+        <div class="sc-value" style="color:var(--red)">23.6%</div>
+        <div class="sc-delta delta-neg">▲ 0.5% vs previous period</div>
+        <div class="sc-desc">331 cases — outside agent scope</div>
+        <div class="sc-sub">Target: ≤ 15%</div>
+      </div>
+      <div class="score-card">
+        <div class="sc-header"><span class="sc-dot" style="background:var(--fg4)"></span><span class="sc-label">No Response</span></div>
+        <div class="sc-value" style="color:var(--fg4)">8.4%</div>
+        <div class="sc-delta delta-neutral">— 118 cases</div>
+        <div class="sc-desc">No AI output generated</div>
+        <div class="sc-sub">Investigate for failures</div>
+      </div>
+    </div>
+    <div class="score-cards-footer" style="background:var(--bg3);border:1px solid var(--stroke);border-radius:var(--radius-xl);margin-top:-16px;margin-bottom:20px;">
+      <span class="legend-item"><span class="legend-dot" style="background:var(--green)"></span>16.9% Offered Solution</span>
+      <span class="legend-item"><span class="legend-dot" style="background:var(--brand)"></span>51.2% Requested More Info</span>
+      <span class="legend-item"><span class="legend-dot" style="background:var(--red)"></span>23.6% Not Compatible</span>
+      <span class="legend-item"><span class="legend-dot" style="background:var(--fg4)"></span>8.4% No Response</span>
+    </div>
+
+    <!-- KPI Row 1 -->
+    <div class="kpi-row">
+      <div class="kpi-card">
+        <span class="kpi-title">Case Volume</span>
+        <span class="kpi-value">1,405</span>
+        <span class="kpi-delta delta-pos">▲ 12.1% vs previous</span>
+      </div>
+      <div class="kpi-card">
+        <span class="kpi-title">Avg Case Age</span>
+        <span class="kpi-value">38.6 days</span>
+        <span class="kpi-delta delta-neg">▲ 2.4% vs previous</span>
+      </div>
+      <div class="kpi-card">
+        <span class="kpi-title">Resolution Rate (DFM)</span>
+        <span class="kpi-value">65.8%</span>
+        <span class="kpi-delta delta-pos">▲ 3.2% vs previous</span>
+      </div>
+    </div>
+
+    <!-- KPI Row 2 -->
+    <div class="kpi-row">
+      <div class="kpi-card">
+        <span class="kpi-title">Shim Pipeline Entries</span>
+        <span class="kpi-value">2,018</span>
+        <span class="kpi-delta delta-neutral">— Total routed</span>
+      </div>
+      <div class="kpi-card">
+        <span class="kpi-title">Licensing Cases</span>
+        <span class="kpi-value">511</span>
+        <span class="kpi-delta delta-neutral">25.3% of total</span>
+      </div>
+      <div class="kpi-card">
+        <span class="kpi-title">Throttling Cases</span>
+        <span class="kpi-value">1,238</span>
+        <span class="kpi-delta delta-neutral">61.3% of total</span>
+      </div>
+      <div class="kpi-card">
+        <span class="kpi-title">Approvals Cases</span>
+        <span class="kpi-value">269</span>
+        <span class="kpi-delta delta-neutral">13.3% of total</span>
+      </div>
+    </div>
+
+    <!-- Charts Row: 3 pies -->
+    <div class="chart-row chart-row-3">
+      <!-- Case Status -->
+      <div class="chart-card">
+        <div class="chart-title">Case Status — BizApps Agent</div>
+        <div class="pie-mini">
+          <svg viewBox="0 0 180 180" width="140" height="140">
+            <circle cx="90" cy="90" r="70" fill="none" stroke="var(--brand)" stroke-width="35"
+              stroke-dasharray="225.2 213.6" stroke-dashoffset="0" transform="rotate(-90 90 90)"/>
+            <circle cx="90" cy="90" r="70" fill="none" stroke="var(--navy)" stroke-width="35"
+              stroke-dasharray="103.7 335.2" stroke-dashoffset="-225.2" transform="rotate(-90 90 90)"/>
+            <circle cx="90" cy="90" r="70" fill="none" stroke="var(--orange)" stroke-width="35"
+              stroke-dasharray="74.2 364.6" stroke-dashoffset="-328.9" transform="rotate(-90 90 90)"/>
+            <circle cx="90" cy="90" r="70" fill="none" stroke="var(--purple)" stroke-width="35"
+              stroke-dasharray="36.9 401.9" stroke-dashoffset="-403.1" transform="rotate(-90 90 90)"/>
+            <text x="90" y="86" text-anchor="middle" font-size="18" font-weight="700" fill="var(--fg1)">1,405</text>
+            <text x="90" y="102" text-anchor="middle" font-size="10" fill="var(--fg3)">Total</text>
+          </svg>
+          <div class="pie-legend-list">
+            <div class="pie-legend-item"><span class="pie-swatch" style="background:var(--brand)"></span>Requested More Info — 719</div>
+            <div class="pie-legend-item"><span class="pie-swatch" style="background:var(--navy)"></span>Not Compatible — 331</div>
+            <div class="pie-legend-item"><span class="pie-swatch" style="background:var(--orange)"></span>Offered Solution — 237</div>
+            <div class="pie-legend-item"><span class="pie-swatch" style="background:var(--purple)"></span>No Response — 118</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- DFM Status -->
+      <div class="chart-card">
+        <div class="chart-title">Case Status in DFM</div>
+        <div class="pie-mini">
+          <svg viewBox="0 0 180 180" width="140" height="140">
+            <circle cx="90" cy="90" r="70" fill="none" stroke="var(--brand)" stroke-width="35"
+              stroke-dasharray="286.1 152.8" stroke-dashoffset="0" transform="rotate(-90 90 90)"/>
+            <circle cx="90" cy="90" r="70" fill="none" stroke="var(--yellow)" stroke-width="35"
+              stroke-dasharray="35.9 402.9" stroke-dashoffset="-286.1" transform="rotate(-90 90 90)"/>
+            <circle cx="90" cy="90" r="70" fill="none" stroke="var(--orange)" stroke-width="35"
+              stroke-dasharray="27.3 411.6" stroke-dashoffset="-322.0" transform="rotate(-90 90 90)"/>
+            <circle cx="90" cy="90" r="70" fill="none" stroke="var(--navy)" stroke-width="35"
+              stroke-dasharray="25.4 413.5" stroke-dashoffset="-349.3" transform="rotate(-90 90 90)"/>
+            <circle cx="90" cy="90" r="70" fill="none" stroke="var(--fg4)" stroke-width="35"
+              stroke-dasharray="64.2 374.6" stroke-dashoffset="-374.7" transform="rotate(-90 90 90)"/>
+            <text x="90" y="86" text-anchor="middle" font-size="18" font-weight="700" fill="var(--fg1)">924</text>
+            <text x="90" y="102" text-anchor="middle" font-size="10" fill="var(--fg3)">Resolved</text>
+          </svg>
+          <div class="pie-legend-list">
+            <div class="pie-legend-item"><span class="pie-swatch" style="background:var(--brand)"></span>Resolved — 924</div>
+            <div class="pie-legend-item"><span class="pie-swatch" style="background:var(--yellow)"></span>Troubleshooting — 116</div>
+            <div class="pie-legend-item"><span class="pie-swatch" style="background:var(--orange)"></span>Un-resolved — 88</div>
+            <div class="pie-legend-item"><span class="pie-swatch" style="background:var(--navy)"></span>Disconnect/Hang — 82</div>
+            <div class="pie-legend-item"><span class="pie-swatch" style="background:var(--fg4)"></span>Other — 195</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Scenarios -->
+      <div class="chart-card">
+        <div class="chart-title">Scenarios</div>
+        <div class="pie-mini">
+          <svg viewBox="0 0 180 180" width="140" height="140">
+            <circle cx="90" cy="90" r="70" fill="none" stroke="var(--brand)" stroke-width="35"
+              stroke-dasharray="240.0 198.8" stroke-dashoffset="0" transform="rotate(-90 90 90)"/>
+            <circle cx="90" cy="90" r="70" fill="none" stroke="var(--orange)" stroke-width="35"
+              stroke-dasharray="96.0 342.8" stroke-dashoffset="-240.0" transform="rotate(-90 90 90)"/>
+            <circle cx="90" cy="90" r="70" fill="none" stroke="var(--purple)" stroke-width="35"
+              stroke-dasharray="67.5 371.4" stroke-dashoffset="-336.0" transform="rotate(-90 90 90)"/>
+            <circle cx="90" cy="90" r="70" fill="none" stroke="var(--yellow)" stroke-width="35"
+              stroke-dasharray="35.3 403.6" stroke-dashoffset="-403.5" transform="rotate(-90 90 90)"/>
+            <text x="90" y="86" text-anchor="middle" font-size="14" font-weight="700" fill="var(--fg1)">1,505</text>
+            <text x="90" y="102" text-anchor="middle" font-size="10" fill="var(--fg3)">Total</text>
+          </svg>
+          <div class="pie-legend-list">
+            <div class="pie-legend-item"><span class="pie-swatch" style="background:var(--brand)"></span>BizApps Agent — 836</div>
+            <div class="pie-legend-item"><span class="pie-swatch" style="background:var(--orange)"></span>Flow Perf Agent — 334</div>
+            <div class="pie-legend-item"><span class="pie-swatch" style="background:var(--purple)"></span>Licensing Agent — 235</div>
+            <div class="pie-legend-item"><span class="pie-swatch" style="background:var(--yellow)"></span>Approvals Agent — 100</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Trend Charts Row -->
+    <div class="chart-row chart-row-2">
+      <!-- Agent Level Request Rate -->
+      <div class="chart-card">
+        <div class="chart-title">Agent Level Request Rate</div>
+        <div class="chart-area">
+          <svg viewBox="0 0 600 160" preserveAspectRatio="none">
+            <line x1="40" y1="20" x2="580" y2="20" stroke="#e0e0e0" stroke-width="1" stroke-dasharray="4,3"/>
+            <line x1="40" y1="50" x2="580" y2="50" stroke="#e0e0e0" stroke-width="1" stroke-dasharray="4,3"/>
+            <line x1="40" y1="80" x2="580" y2="80" stroke="#e0e0e0" stroke-width="1" stroke-dasharray="4,3"/>
+            <line x1="40" y1="110" x2="580" y2="110" stroke="#e0e0e0" stroke-width="1" stroke-dasharray="4,3"/>
+            <line x1="40" y1="140" x2="580" y2="140" stroke="#e0e0e0" stroke-width="1"/>
+            <text x="35" y="24" text-anchor="end" font-size="9" fill="#94a3b8">300</text>
+            <text x="35" y="54" text-anchor="end" font-size="9" fill="#94a3b8">200</text>
+            <text x="35" y="84" text-anchor="end" font-size="9" fill="#94a3b8">100</text>
+            <text x="35" y="114" text-anchor="end" font-size="9" fill="#94a3b8">50</text>
+            <text x="35" y="144" text-anchor="end" font-size="9" fill="#94a3b8">0</text>
+            <text x="130" y="156" text-anchor="middle" font-size="9" fill="#94a3b8">Dec '25</text>
+            <text x="270" y="156" text-anchor="middle" font-size="9" fill="#94a3b8">Jan '26</text>
+            <text x="400" y="156" text-anchor="middle" font-size="9" fill="#94a3b8">Feb '26</text>
+            <text x="530" y="156" text-anchor="middle" font-size="9" fill="#94a3b8">Mar '26</text>
+            <polyline points="60,138 80,135 100,20 120,133 140,138 180,136 220,138 260,136 300,138 340,136 380,138 420,136 460,138 500,136 540,138 570,136" fill="none" stroke="var(--brand)" stroke-width="2"/>
+            <polyline points="60,138 80,130 100,55 120,135 140,138 180,137 220,138 260,137 300,138 340,137 380,138 420,137 460,138 500,137 540,138 570,137" fill="none" stroke="var(--red)" stroke-width="1.5"/>
+            <polyline points="60,139 100,138 140,139 180,138 220,139 260,138 300,139 340,138 380,139 420,138 460,139 500,138 540,139 570,138" fill="none" stroke="var(--orange)" stroke-width="1.5"/>
+          </svg>
+        </div>
+        <div class="chart-legend">
+          <span class="legend-item"><span class="legend-dot" style="background:var(--brand)"></span>Case Tool</span>
+          <span class="legend-item"><span class="legend-dot" style="background:var(--red)"></span>Licensing Agent</span>
+          <span class="legend-item"><span class="legend-dot" style="background:var(--orange)"></span>Kusto Troubleshooting</span>
+        </div>
+      </div>
+
+      <!-- AI Solution Rate Trend -->
+      <div class="chart-card">
+        <div class="chart-title">AI Solution Rate Trend (%)</div>
+        <div class="chart-area">
+          <svg viewBox="0 0 600 160" preserveAspectRatio="none">
+            <line x1="40" y1="20" x2="580" y2="20" stroke="#e0e0e0" stroke-width="1" stroke-dasharray="4,3"/>
+            <line x1="40" y1="60" x2="580" y2="60" stroke="#e0e0e0" stroke-width="1" stroke-dasharray="4,3"/>
+            <line x1="40" y1="100" x2="580" y2="100" stroke="#e0e0e0" stroke-width="1" stroke-dasharray="4,3"/>
+            <line x1="40" y1="140" x2="580" y2="140" stroke="#e0e0e0" stroke-width="1"/>
+            <text x="35" y="24" text-anchor="end" font-size="9" fill="#94a3b8">30%</text>
+            <text x="35" y="64" text-anchor="end" font-size="9" fill="#94a3b8">20%</text>
+            <text x="35" y="104" text-anchor="end" font-size="9" fill="#94a3b8">10%</text>
+            <text x="35" y="144" text-anchor="end" font-size="9" fill="#94a3b8">0%</text>
+            <text x="130" y="156" text-anchor="middle" font-size="9" fill="#94a3b8">Dec '25</text>
+            <text x="270" y="156" text-anchor="middle" font-size="9" fill="#94a3b8">Jan '26</text>
+            <text x="400" y="156" text-anchor="middle" font-size="9" fill="#94a3b8">Feb '26</text>
+            <text x="530" y="156" text-anchor="middle" font-size="9" fill="#94a3b8">Mar '26</text>
+            <line x1="40" y1="40" x2="580" y2="40" stroke="var(--green)" stroke-width="1.5" stroke-dasharray="8,4" opacity="0.5"/>
+            <text x="585" y="44" font-size="9" fill="var(--green)" font-weight="600">25% target</text>
+            <polyline points="60,120 130,110 200,105 270,95 340,88 400,82 470,78 540,72 570,68" fill="none" stroke="var(--teal)" stroke-width="2.5"/>
+            <polygon points="60,120 130,110 200,105 270,95 340,88 400,82 470,78 540,72 570,68 570,140 60,140" fill="var(--teal)" opacity="0.06"/>
+          </svg>
+        </div>
+        <div class="chart-legend">
+          <span class="legend-item"><span class="legend-dot" style="background:var(--teal)"></span>AI Solution Rate</span>
+          <span class="legend-item"><span class="legend-dot" style="background:var(--green);opacity:.5"></span>Promotion target (25%)</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Agent Trigger Flow -->
+    <div class="flow-section">
+      <div class="flow-header">🔀 Agent Trigger Flow</div>
+      <div style="padding:24px;">
+        <div style="display:flex;align-items:center;gap:0;margin-bottom:24px;overflow-x:auto;">
+          <!-- Entry -->
+          <div style="text-align:center;min-width:120px;">
+            <div style="background:var(--bg2);border:2px solid var(--stroke);border-radius:12px;padding:16px 12px;">
+              <div style="font-size:22px;margin-bottom:4px;">🔌</div>
+              <div style="font-weight:600;font-size:13px;">Shim</div>
+              <div style="font-size:11px;color:var(--fg4);">Entry Point</div>
+            </div>
+          </div>
+          <div style="display:flex;align-items:center;padding:0 4px;">
+            <div style="width:40px;height:2px;background:var(--teal);"></div>
+            <div style="width:0;height:0;border-top:6px solid transparent;border-bottom:6px solid transparent;border-left:8px solid var(--teal);"></div>
+          </div>
+          <!-- Hub -->
+          <div style="text-align:center;min-width:160px;">
+            <div style="background:var(--tealBg);border:2px solid var(--teal);border-radius:12px;padding:16px 12px;">
+              <div style="font-size:22px;margin-bottom:4px;">🤖</div>
+              <div style="font-weight:600;font-size:13px;color:var(--teal);">BizApps Solution Agents</div>
+              <div style="font-size:20px;font-weight:700;color:var(--teal);margin-top:4px;">2,018</div>
+              <div style="font-size:11px;color:var(--fg4);">cases processed</div>
+            </div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:8px;padding:0 4px;">
+            <div style="display:flex;align-items:center;"><div style="width:30px;height:2px;background:var(--teal);"></div><div style="width:0;height:0;border-top:5px solid transparent;border-bottom:5px solid transparent;border-left:7px solid var(--teal);"></div></div>
+            <div style="display:flex;align-items:center;"><div style="width:30px;height:2px;background:var(--teal);"></div><div style="width:0;height:0;border-top:5px solid transparent;border-bottom:5px solid transparent;border-left:7px solid var(--teal);"></div></div>
+            <div style="display:flex;align-items:center;"><div style="width:30px;height:2px;background:var(--teal);"></div><div style="width:0;height:0;border-top:5px solid transparent;border-bottom:5px solid transparent;border-left:7px solid var(--teal);"></div></div>
+          </div>
+          <!-- Scenario Nodes -->
+          <div style="display:flex;flex-direction:column;gap:8px;min-width:200px;">
+            <div style="background:var(--bg2);border:1px solid var(--stroke);border-radius:10px;padding:10px 14px;display:flex;align-items:center;gap:10px;">
+              <div style="width:8px;height:8px;border-radius:50%;background:#6264A7;flex-shrink:0;"></div>
+              <div style="flex:1;"><div style="font-weight:600;font-size:12px;">Licensing</div><div style="font-size:11px;color:var(--fg4);">511 cases · 25.3%</div></div>
+              <div style="font-size:16px;font-weight:700;color:#6264A7;">511</div>
+            </div>
+            <div style="background:var(--bg2);border:1px solid var(--stroke);border-radius:10px;padding:10px 14px;display:flex;align-items:center;gap:10px;">
+              <div style="width:8px;height:8px;border-radius:50%;background:#E3008C;flex-shrink:0;"></div>
+              <div style="flex:1;"><div style="font-weight:600;font-size:12px;">Throttling</div><div style="font-size:11px;color:var(--fg4);">1,238 cases · 61.3%</div></div>
+              <div style="font-size:16px;font-weight:700;color:#E3008C;">1,238</div>
+            </div>
+            <div style="background:var(--bg2);border:1px solid var(--stroke);border-radius:10px;padding:10px 14px;display:flex;align-items:center;gap:10px;">
+              <div style="width:8px;height:8px;border-radius:50%;background:#00B294;flex-shrink:0;"></div>
+              <div style="flex:1;"><div style="font-weight:600;font-size:12px;">Approvals</div><div style="font-size:11px;color:var(--fg4);">269 cases · 13.3%</div></div>
+              <div style="font-size:16px;font-weight:700;color:#00B294;">269</div>
+            </div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:8px;padding:0 4px;">
+            <div style="display:flex;align-items:center;"><div style="width:30px;height:2px;background:var(--stroke);"></div><div style="width:0;height:0;border-top:5px solid transparent;border-bottom:5px solid transparent;border-left:7px solid var(--stroke);"></div></div>
+            <div style="display:flex;align-items:center;"><div style="width:30px;height:2px;background:var(--stroke);"></div><div style="width:0;height:0;border-top:5px solid transparent;border-bottom:5px solid transparent;border-left:7px solid var(--stroke);"></div></div>
+            <div style="display:flex;align-items:center;"><div style="width:30px;height:2px;background:var(--stroke);"></div><div style="width:0;height:0;border-top:5px solid transparent;border-bottom:5px solid transparent;border-left:7px solid var(--stroke);"></div></div>
+          </div>
+          <!-- Sub-Agents -->
+          <div style="display:flex;flex-direction:column;gap:8px;min-width:260px;">
+            <div style="background:var(--bg2);border:1px solid var(--stroke);border-radius:10px;padding:10px 14px;">
+              <div style="font-weight:600;font-size:12px;margin-bottom:4px;">Know Me Licensing Agent</div>
+              <div style="display:flex;gap:16px;font-size:11px;color:var(--fg4);">
+                <span>Requests: <strong style="color:var(--fg1);">140</strong></span>
+                <span>Responses: <strong style="color:var(--fg1);">119</strong></span>
+                <span>Rate: <strong style="color:var(--green);">85.0%</strong></span>
+              </div>
+            </div>
+            <div style="background:var(--bg2);border:1px solid var(--stroke);border-radius:10px;padding:10px 14px;">
+              <div style="font-weight:600;font-size:12px;margin-bottom:4px;">Kusto Troubleshooting Agent</div>
+              <div style="display:flex;gap:16px;font-size:11px;color:var(--fg4);">
+                <span>Requests: <strong style="color:var(--fg1);">47</strong></span>
+                <span>Responses: <strong style="color:var(--fg1);">47</strong></span>
+                <span>Rate: <strong style="color:var(--green);">100%</strong></span>
+              </div>
+            </div>
+            <div style="background:var(--bg2);border:1px solid var(--stroke);border-radius:10px;padding:10px 14px;">
+              <div style="font-weight:600;font-size:12px;margin-bottom:4px;">Case Tool</div>
+              <div style="display:flex;gap:16px;font-size:11px;color:var(--fg4);">
+                <span>Requests: <strong style="color:var(--fg1);">387</strong></span>
+                <span>Responses: <strong style="color:var(--fg1);">387</strong></span>
+                <span>Rate: <strong style="color:var(--green);">100%</strong></span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Scenario Breakdown Table -->
+        <h4 style="font-size:14px;font-weight:600;margin:0 0 12px 0;">Scenario Breakdown</h4>
+        <table class="scorecard-table">
+          <thead>
+            <tr>
+              <th>Scenario</th>
+              <th style="text-align:right">Cases</th>
+              <th style="text-align:right">% of Total</th>
+              <th>Sub-Agents</th>
+              <th style="text-align:right">Requests</th>
+              <th style="text-align:right">Responses</th>
+              <th style="text-align:right">Response Rate</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="td-metric">Licensing</td>
+              <td class="td-value">511</td>
+              <td class="td-value">25.3%</td>
+              <td class="td-metric">Know Me Licensing Agent</td>
+              <td class="td-value">140</td>
+              <td class="td-value">119</td>
+              <td class="td-value"><span class="score-badge badge-pass">85.0%</span></td>
+            </tr>
+            <tr>
+              <td class="td-metric">Throttling</td>
+              <td class="td-value">1,238</td>
+              <td class="td-value">61.3%</td>
+              <td class="td-metric">Kusto Troubleshooting Agent</td>
+              <td class="td-value">47</td>
+              <td class="td-value">47</td>
+              <td class="td-value"><span class="score-badge badge-pass">100%</span></td>
+            </tr>
+            <tr>
+              <td class="td-metric">Approvals</td>
+              <td class="td-value">269</td>
+              <td class="td-value">13.3%</td>
+              <td class="td-metric">Case Tool</td>
+              <td class="td-value">387</td>
+              <td class="td-value">387</td>
+              <td class="td-value"><span class="score-badge badge-pass">100%</span></td>
+            </tr>
+            <tr style="font-weight:600;background:var(--bg2);">
+              <td class="td-metric">Total</td>
+              <td class="td-value">2,018</td>
+              <td class="td-value">100%</td>
+              <td class="td-metric">All Sub-Agents</td>
+              <td class="td-value">574</td>
+              <td class="td-value">553</td>
+              <td class="td-value"><span class="score-badge badge-pass">96.3%</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </div><!-- end tab-shadow-metrics -->
+
+</div><!-- end root -->
+
+<script>
+  // Tab switching
+  document.getElementById('tabBar').addEventListener('click', function(e) {
+    const btn = e.target.closest('.tab-btn');
+    if (!btn) return;
+    const tabId = btn.dataset.tab;
+
+    // Deactivate all tabs and panels
+    document.querySelectorAll('.tab-btn').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+
+    // Activate clicked tab and panel
+    btn.classList.add('active');
+    document.getElementById('tab-' + tabId).classList.add('active');
+  });
+</script>
+
+</body>
+</html>
