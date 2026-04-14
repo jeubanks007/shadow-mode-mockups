@@ -272,6 +272,20 @@
   .opt-gap-red { color: var(--red); font-weight: 600; }
   .opt-gap-yellow { color: var(--orange); font-weight: 600; }
   .opt-section { margin-bottom: 28px; }
+  .opt-filter-bar {
+    display: flex; align-items: center; gap: 12px; margin-bottom: 20px;
+    padding: 12px 16px; background: var(--bg); border: 1px solid var(--stroke);
+    border-radius: var(--radius-xl); box-shadow: var(--shadow4);
+  }
+  .opt-filter-bar label { font-size: 13px; font-weight: 600; color: var(--fg3); white-space: nowrap; }
+  .opt-filter-bar select {
+    padding: 7px 32px 7px 12px; font-size: 13px; font-family: inherit;
+    border: 1px solid var(--stroke); border-radius: var(--radius-md);
+    background: var(--bg); color: var(--fg1); cursor: pointer;
+    appearance: auto; min-width: 200px;
+  }
+  .opt-filter-bar select:focus { outline: 2px solid var(--brand); outline-offset: -1px; }
+  .opt-filter-hint { font-size: 12px; color: var(--fg4); margin-left: auto; }
   @media(max-width:700px) { .opt-kpi-grid { grid-template-columns: repeat(2, 1fr); } }
 </style>
 </head>
@@ -1219,6 +1233,22 @@
         <div class="hero-label">Current Pass Rate</div>
       </div>
 
+      <!-- Metric Filter -->
+      <div class="opt-filter-bar">
+        <label for="optMetricFilter">Optimize for Metric:</label>
+        <select id="optMetricFilter" onchange="filterOptimizer(this.value)">
+          <option value="all">All Metrics</option>
+          <option value="relevance">Relevance</option>
+          <option value="coherence">Coherence</option>
+          <option value="fluency">Fluency</option>
+          <option value="groundedness">Groundedness</option>
+          <option value="retrieval">Retrieval</option>
+          <option value="completeness">Completeness</option>
+          <option value="accuracy">Accuracy</option>
+        </select>
+        <span class="opt-filter-hint">Filter action plan by the metric you want to improve</span>
+      </div>
+
       <!-- KPI Cards -->
       <div class="opt-kpi-grid">
         <div class="opt-kpi-card"><div class="kpi-val">14,652</div><div class="kpi-lbl">Total Cases</div></div>
@@ -1235,7 +1265,7 @@
         <p class="opt-subtitle">Specific, actionable steps to improve agent performance. Ordered by impact.</p>
 
         <!-- Item 1 -->
-        <div class="opt-action-card border-red">
+        <div class="opt-action-card border-red" data-metrics="relevance all">
           <div class="act-title">🔴 Fix Relevance — Largest gap (+2.77)</div>
           <p class="act-detail">Failing cases average 2.77/5 vs passing. This is the single biggest differentiator between passing and failing.</p>
           <div class="opt-action-box">
@@ -1249,7 +1279,7 @@
         </div>
 
         <!-- Item 2 -->
-        <div class="opt-action-card border-red">
+        <div class="opt-action-card border-red" data-metrics="coherence all">
           <div class="act-title">🔴 Fix Coherence — Second largest gap (+3.11)</div>
           <p class="act-detail">Failing cases average 3.11/5 vs passing cases.</p>
           <div class="opt-action-box">
@@ -1263,7 +1293,7 @@
         </div>
 
         <!-- Item 3 -->
-        <div class="opt-action-card border-yellow">
+        <div class="opt-action-card border-yellow" data-metrics="relevance groundedness all">
           <div class="act-title">🎯 Priority scenario: MFA Reset</div>
           <p class="act-detail">Risk score 27.6/10 — 2,316 failing on Relevance, 0 case failures out of 2,519 cases. Weakest metric: Groundedness (0/5).</p>
           <div class="opt-action-box">
@@ -1277,7 +1307,7 @@
         </div>
 
         <!-- Item 4 -->
-        <div class="opt-action-card border-yellow">
+        <div class="opt-action-card border-yellow" data-metrics="relevance groundedness all">
           <div class="act-title">🎯 Priority scenario: SCIM - Identity - 'how to'</div>
           <p class="act-detail">Risk score 26.9/10 — 3,173 failing on Relevance, 0 case failures out of 3,540 cases. Weakest metric: Groundedness (0/5).</p>
           <div class="opt-action-box">
@@ -1291,7 +1321,7 @@
         </div>
 
         <!-- Item 5 -->
-        <div class="opt-action-card border-yellow">
+        <div class="opt-action-card border-yellow" data-metrics="relevance groundedness all">
           <div class="act-title">🎯 Priority scenario: SCIM - Intune - 'how to'</div>
           <p class="act-detail">Risk score 26.9/10 — 2,500 failing on Relevance, 0 case failures out of 2,790 cases. Weakest metric: Groundedness (0/5).</p>
           <div class="opt-action-box">
@@ -1305,7 +1335,7 @@
         </div>
 
         <!-- Item 6 -->
-        <div class="opt-action-card border-blue">
+        <div class="opt-action-card border-blue" data-metrics="groundedness retrieval accuracy all">
           <div class="act-title">🚨 13,201 failing case(s) were NOT escalated</div>
           <p class="act-detail">These cases failed without triggering human escalation. The agent may have confidently delivered subpar responses.</p>
           <div class="opt-action-box">
@@ -1319,7 +1349,7 @@
         </div>
 
         <!-- Item 7 -->
-        <div class="opt-action-card border-green">
+        <div class="opt-action-card border-green" data-metrics="fluency completeness coherence all">
           <div class="act-title">📚 Expand knowledge base for weak scenarios</div>
           <p class="act-detail">ACTNow Error, Case Summary have the lowest quality scores. The agent likely lacks sufficient documentation for these complex operations.</p>
           <div class="opt-action-box">
@@ -1390,6 +1420,39 @@
     btn.classList.add('active');
     document.getElementById('tab-' + tabId).classList.add('active');
   });
+
+  // Optimizer metric filter
+  function filterOptimizer(metric) {
+    // Show/hide action cards
+    document.querySelectorAll('.opt-action-card').forEach(function(card) {
+      var metrics = card.getAttribute('data-metrics') || '';
+      card.style.display = metrics.indexOf(metric) !== -1 ? '' : 'none';
+    });
+
+    // Highlight matching row in targets table
+    document.querySelectorAll('.opt-targets-table tbody tr').forEach(function(row) {
+      var metricName = row.querySelector('td').textContent.trim().toLowerCase();
+      if (metric === 'all') {
+        row.style.background = '';
+        row.style.fontWeight = '';
+      } else if (metricName === metric) {
+        row.style.background = 'var(--tealBg)';
+        row.style.fontWeight = '600';
+      } else {
+        row.style.background = '';
+        row.style.fontWeight = '';
+      }
+    });
+
+    // Update count badge
+    var visible = document.querySelectorAll('.opt-action-card[style=""], .opt-action-card:not([style])').length;
+    var hint = document.querySelector('.opt-filter-hint');
+    if (metric === 'all') {
+      hint.textContent = 'Filter action plan by the metric you want to improve';
+    } else {
+      hint.textContent = visible + ' action' + (visible !== 1 ? 's' : '') + ' related to ' + metric.charAt(0).toUpperCase() + metric.slice(1);
+    }
+  }
 </script>
 
 </body>
