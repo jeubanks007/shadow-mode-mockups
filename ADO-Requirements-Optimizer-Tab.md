@@ -82,7 +82,36 @@
 
 ---
 
-## User Story 4: Data Integration
+## User Story 4: Affected Cases Drill-Down
+
+**Title:** As an agent owner, I want to see example affected cases within each action card so I can investigate specific failures without leaving the Optimizer tab.
+
+**Acceptance Criteria:**
+- [ ] Each action card includes a collapsible "▶ N affected cases" toggle button below the impact badges
+- [ ] Clicking the toggle expands a panel showing a table of sample affected cases (default: collapsed)
+- [ ] The toggle arrow rotates (▶ → ▼) when expanded and reverses when collapsed
+- [ ] The cases table includes the following columns:
+  - **Case #** — unique case/evaluation ID
+  - **Scenario** — the scenario label for the case
+  - **Quality Avg** — average quality score across all metrics for that case
+  - **Status** — inline badge(s) indicating case status:
+    - "failing" (red badge) if the case failed quality thresholds
+    - "not escalated" (yellow/amber badge) if the case was not escalated to a human
+    - "passing" (green badge) if applicable
+  - **Knowledge Source** — the KB article or knowledge path associated with the case
+- [ ] Up to 5 representative cases are shown per action card (most impactful or lowest scoring)
+- [ ] Cases displayed are contextually relevant to the action card's category and metric
+- [ ] Table rows have hover highlighting consistent with other tables on the page
+- [ ] Expand/collapse state is independent per card (expanding one does not affect others)
+- [ ] Collapsible panel uses smooth animation (max-height transition)
+
+**Data Requirements:**
+- Per-action affected cases list with: eval_id, scenario, quality_avg, passing/failed flags, escalation status, knowledge source label
+- Cases should be sorted by quality_avg ascending (worst cases first)
+
+---
+
+## User Story 5: Data Integration
 
 **Title:** As a developer, I need the Optimizer tab to consume evaluation run data from the existing API so recommendations are generated dynamically.
 
@@ -105,6 +134,7 @@
 - **Framework:** React + Fluent UI v9 (consistent with existing Frontier Agent Catalog)
 - **Styling:** Light theme, matching existing page patterns (white card backgrounds, subtle shadows, standard Fluent tokens)
 - **Layout:** Improvement Targets table at top → Prioritized Action Plan below (no separate hero card or KPI grid — the targets table serves as the summary)
+- **Affected Cases:** Collapsible panels within action cards using max-height CSS transition; toggle state managed per-card via JS click handler
 - **Tab Integration:** Uses existing tab switching pattern with `data-tab` attributes
 - **Filter State:** Selected metric row should persist while navigating between tabs within the same page session
 
@@ -114,6 +144,7 @@
 
 - Evaluation API must expose per-case metric scores (relevance, coherence, fluency, groundedness, retrieval, completeness)
 - Evaluation API must expose scenario labels and case metadata (case_failed, human_escalation, intent_fulfilled)
+- Evaluation API must expose per-case knowledge source labels/paths for affected cases drill-down
 - Recommendation engine logic (can be client-side initially, migrated to server-side for performance at scale)
 
 ---
