@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Agent Catalog – Shadow Mode Mockup</title>
+<style>
+  :root {
+    --bg1: #ffffff;
+    --bg2: #f5f5f5;
+    --bg3: #ebebeb;
+    --fg1: #242424;
+    --fg3: #707070;
+    --fg4: #999;
+    --stroke1: #d1d1d1;
+    --stroke2: #e0e0e0;
+    --brand: #0078d4;
+    --green: #107c10;
+    --orange: #d83b01;
+    --teal: #038387;
+    --yellow: #c19c00;
+    --purple: #7719aa;
+    --red: #d13438;
+    --lavender: #7160e8;
+    --greenBg: #dff6dd; --greenFg: #107c10;
+    --yellowBg: #fff4ce; --yellowFg: #c19c00;
+    --redBg: #fde7e9;   --redFg: #d13438;
+    --neutralBg: #f0f0f0; --neutralFg: #707070;
+    --tealBg: #d6f0f0;  --tealFg: #038387;
+    --shadow4: 0 2px 4px rgba(0,0,0,.08);
+    --shadow8: 0 2px 8px rgba(0,0,0,.1);
+    --shadow16: 0 4px 16px rgba(0,0,0,.12);
+    --radius-lg: 12px;
+    --radius-md: 8px;
+    --radius-sm: 4px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background: var(--bg2); color: var(--fg1); }
+
+  /* Page Header */
+  .page-header { padding: 32px 40px 0; background: var(--bg1); }
+  .page-header h1 { font-size: 28px; font-weight: 700; margin-bottom: 4px; }
+  .page-header p { font-size: 14px; color: var(--fg3); margin-bottom: 0; }
+  .page-header p a { color: var(--brand); text-decoration: none; }
+  .divider { height: 1px; background: var(--stroke2); }
+  .page-body { padding: 24px 40px 40px; background: var(--bg2); min-height: calc(100vh - 120px); }
+
+  /* Summary Bar */
+  .summary-card {
+    background: var(--bg1); border-radius: var(--radius-lg);
+    border: 1px solid var(--stroke2); margin-bottom: 24px;
+    box-shadow: var(--shadow8); padding: 0 8px; overflow-x: auto;
+  }
+  .summary-row { display: flex; align-items: center; height: 56px; }
+  .summary-stage {
+    display: flex; align-items: center; gap: 8px;
+    padding: 0 16px; height: 100%; cursor: pointer;
+    border-right: 1px solid var(--stroke2); transition: background .15s;
+    white-space: nowrap; user-select: none;
+  }
+  .summary-stage:last-of-type { border-right: none; }
+  .summary-stage:hover { background: #fafafa; }
+  .summary-stage.active { background: var(--bg3); border-bottom: 2px solid var(--fg1); }
+  .summary-label { font-size: 12px; font-weight: 600; }
+  .summary-count { font-size: 18px; font-weight: 700; min-width: 20px; text-align: center; }
+  .summary-total {
+    display: flex; align-items: center; gap: 8px;
+    padding: 0 16px; height: 100%; margin-left: auto;
+    border-left: 1px solid var(--stroke2);
+  }
+  .summary-total-label { font-size: 12px; font-weight: 600; color: var(--fg3); }
+  .summary-total-value { font-size: 20px; font-weight: 700; }
+
+  /* Section Header */
+  .section-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; margin-top: 8px; }
+  .section-title { font-size: 18px; font-weight: 600; }
+  .section-subtitle { font-size: 13px; color: var(--fg3); margin-top: 2px; }
+  .section-badge { font-size: 11px; font-weight: 600; padding: 2px 8px; border-radius: var(--radius-sm); margin-left: 8px; }
+
+  /* Agent Grid */
+  .agent-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 16px; margin-bottom: 36px;
+  }
+  .agent-card {
+    background: var(--bg1); border-radius: var(--radius-lg);
+    border: 1px solid var(--stroke2); padding: 20px;
+    display: flex; flex-direction: column; gap: 8px;
+    box-shadow: var(--shadow8); transition: box-shadow .2s, transform .2s;
+    cursor: pointer; position: relative;
+  }
+  .agent-card:hover { box-shadow: var(--shadow16); transform: translateY(-1px); }
+  .agent-card-header { display: flex; align-items: flex-start; gap: 10px; }
+  .agent-icon {
+    width: 32px; height: 32px; border-radius: var(--radius-md);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 13px; color: #fff; font-weight: 600; flex-shrink: 0;
+  }
+  .agent-info { flex: 1; min-width: 0; }
+  .agent-name { font-size: 14px; font-weight: 600; margin-bottom: 2px; }
+  .agent-tags { font-size: 12px; color: var(--fg4); }
+  .agent-desc { font-size: 12px; color: var(--fg3); line-height: 1.5; flex: 1; }
+  .badge-row { display: flex; align-items: center; gap: 6px; margin-top: auto; flex-wrap: wrap; }
+  .badge {
+    font-size: 11px; font-weight: 600; padding: 2px 8px;
+    border-radius: var(--radius-sm); white-space: nowrap;
+  }
+
+  /* Shadow-specific styling */
+  .shadow-section { position: relative; }
+  .shadow-section::before {
+    content: ''; position: absolute; left: -12px; top: 0; bottom: 0;
+    width: 3px; border-radius: 2px; background: var(--teal);
+  }
+  .shadow-banner {
+    background: linear-gradient(135deg, var(--tealBg) 0%, #e8f6f6 100%);
+    border: 1px solid var(--teal); border-radius: var(--radius-lg);
+    padding: 16px 20px; margin-bottom: 16px; display: flex;
+    align-items: flex-start; gap: 12px;
+  }
+  .shadow-banner-icon { font-size: 20px; flex-shrink: 0; margin-top: 1px; }
+  .shadow-banner h3 { font-size: 14px; font-weight: 600; color: var(--teal); margin-bottom: 4px; }
+  .shadow-banner p { font-size: 13px; color: var(--fg3); line-height: 1.5; }
+
+  .shadow-overlay {
+    position: absolute; top: 8px; right: 8px;
+    background: var(--teal); color: #fff;
+    font-size: 10px; font-weight: 700; padding: 2px 8px;
+    border-radius: var(--radius-sm); letter-spacing: .3px;
+    text-transform: uppercase;
+  }
+
+  /* Callout / new section label */
+  .new-label {
+    display: inline-flex; align-items: center; gap: 4px;
+    font-size: 11px; font-weight: 700; color: var(--teal);
+    background: var(--tealBg); padding: 2px 10px;
+    border-radius: 20px; text-transform: uppercase; letter-spacing: .5px;
+  }
+
+  /* Responsive */
+  @media (max-width: 768px) {
+    .page-header, .page-body { padding-left: 20px; padding-right: 20px; }
+    .agent-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<div class="page-header">
+  <h1>Agents</h1>
+  <p>Monitor and manage agents in your organization. <a href="#">Manage</a> | <a href="#">Learn more about managing agents</a></p>
+</div>
+<div class="divider"></div>
+
+<div class="page-body">
+
+  <!-- Summary Bar -->
+  <div class="summary-card">
+    <div class="summary-row">
+      <div class="summary-stage">
+        <span class="summary-label">Production</span>
+        <span class="summary-count" style="color:var(--brand)">5</span>
+      </div>
+      <div class="summary-stage">
+        <span class="summary-label">Pre-production</span>
+        <span class="summary-count" style="color:var(--green)">2</span>
+      </div>
+      <div class="summary-stage">
+        <span class="summary-label">Pilot</span>
+        <span class="summary-count" style="color:var(--orange)">0</span>
+      </div>
+      <div class="summary-stage active">
+        <span class="summary-label">Shadow</span>
+        <span class="summary-count" style="color:var(--teal)">4</span>
+      </div>
+      <div class="summary-stage">
+        <span class="summary-label">Development</span>
+        <span class="summary-count" style="color:var(--yellow)">0</span>
+      </div>
+      <div class="summary-stage">
+        <span class="summary-label">Proof of Concept</span>
+        <span class="summary-count" style="color:var(--purple)">1</span>
+      </div>
+      <div class="summary-total">
+        <span class="summary-total-label">Total</span>
+        <span class="summary-total-value">12</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================================= -->
+  <!-- PRODUCTION AGENTS  (collapsed for context)                 -->
+  <!-- ========================================================= -->
+  <div class="section-header">
+    <div>
+      <span class="section-title">Production Agents</span>
+      <span class="badge" style="background:rgba(0,120,212,.1);color:var(--brand)">5 agents</span>
+    </div>
+  </div>
+  <div class="agent-grid">
+    <!-- Card 1 -->
+    <div class="agent-card">
+      <div class="agent-card-header">
+        <div class="agent-icon" style="background:var(--brand)">SI</div>
+        <div class="agent-info">
+          <div class="agent-name">Sales Insights Agent</div>
+          <div class="agent-tags">Sales · Analytics · Active since Jan 2026</div>
+        </div>
+      </div>
+      <div class="agent-desc">Analyzes CRM data to surface deal health scores, predict churn risk, and recommend next-best-actions for your sales team.</div>
+      <div class="badge-row">
+        <span class="badge" style="background:var(--greenBg);color:var(--greenFg)">Healthy</span>
+        <span class="badge" style="background:var(--greenBg);color:var(--greenFg)">Improving</span>
+        <span class="badge" style="background:var(--greenBg);color:var(--greenFg)">Compliant</span>
+        <span class="badge" style="background:var(--neutralBg);color:var(--neutralFg)">AI Foundry</span>
+        <span class="badge" style="background:var(--neutralBg);color:var(--neutralFg)">Production</span>
+      </div>
+    </div>
+    <!-- Card 2 -->
+    <div class="agent-card">
+      <div class="agent-card-header">
+        <div class="agent-icon" style="background:var(--green)">CM</div>
+        <div class="agent-info">
+          <div class="agent-name">Compliance Monitor</div>
+          <div class="agent-tags">Risk · Governance · Active since Dec 2025</div>
+        </div>
+      </div>
+      <div class="agent-desc">Continuously scans internal policies and regulations to detect compliance gaps and generate audit-ready reports.</div>
+      <div class="badge-row">
+        <span class="badge" style="background:var(--greenBg);color:var(--greenFg)">Healthy</span>
+        <span class="badge" style="background:var(--neutralBg);color:var(--neutralFg)">Stable</span>
+        <span class="badge" style="background:var(--greenBg);color:var(--greenFg)">Compliant</span>
+        <span class="badge" style="background:var(--neutralBg);color:var(--neutralFg)">MCS</span>
+        <span class="badge" style="background:var(--neutralBg);color:var(--neutralFg)">Production</span>
+      </div>
+    </div>
+    <!-- Card 3 (abbreviated – same style) -->
+    <div class="agent-card">
+      <div class="agent-card-header">
+        <div class="agent-icon" style="background:var(--lavender)">ET</div>
+        <div class="agent-info">
+          <div class="agent-name">Email Triage Assistant</div>
+          <div class="agent-tags">Productivity · Communication · Active since Feb 2026</div>
+        </div>
+      </div>
+      <div class="agent-desc">Reads incoming emails, categorizes by urgency and topic, drafts suggested replies, and routes to the correct team.</div>
+      <div class="badge-row">
+        <span class="badge" style="background:var(--yellowBg);color:var(--yellowFg)">Degraded</span>
+        <span class="badge" style="background:var(--greenBg);color:var(--greenFg)">Improving</span>
+        <span class="badge" style="background:var(--redBg);color:var(--redFg)">Non-Compliant</span>
+        <span class="badge" style="background:var(--neutralBg);color:var(--neutralFg)">AI Foundry</span>
+        <span class="badge" style="background:var(--neutralBg);color:var(--neutralFg)">Production</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================================= -->
+  <!-- PRE-PRODUCTION AGENTS                                      -->
+  <!-- ========================================================= -->
+  <div class="section-header">
+    <div>
+      <span class="section-title">Pre-Production Agents</span>
+      <span class="badge" style="background:rgba(16,124,16,.1);color:var(--green)">2 agents</span>
+    </div>
+  </div>
+  <div class="agent-grid">
+    <div class="agent-card">
+      <div class="agent-card-header">
+        <div class="agent-icon" style="background:var(--orange)">HO</div>
+        <div class="agent-info">
+          <div class="agent-name">HR Onboarding Agent</div>
+          <div class="agent-tags">HR · Employee experience · Active since Nov 2025</div>
+        </div>
+      </div>
+      <div class="agent-desc">Guides new hires through onboarding tasks, answers policy questions, provisions access requests, and collects feedback at each milestone.</div>
+      <div class="badge-row">
+        <span class="badge" style="background:var(--greenBg);color:var(--greenFg)">Healthy</span>
+        <span class="badge" style="background:var(--greenBg);color:var(--greenFg)">Improving</span>
+        <span class="badge" style="background:var(--greenBg);color:var(--greenFg)">Compliant</span>
+        <span class="badge" style="background:var(--neutralBg);color:var(--neutralFg)">MCS</span>
+        <span class="badge" style="background:var(--neutralBg);color:var(--neutralFg)">Pre-production</span>
+      </div>
+    </div>
+    <div class="agent-card">
+      <div class="agent-card-header">
+        <div class="agent-icon" style="background:var(--red)">DP</div>
+        <div class="agent-info">
+          <div class="agent-name">Data Pipeline Agent</div>
+          <div class="agent-tags">Data · Engineering · Active since Nov 2025</div>
+        </div>
+      </div>
+      <div class="agent-desc">Monitors ETL pipelines for failures and anomalies, auto-remediates transient errors, and logs run metrics to your dashboard.</div>
+      <div class="badge-row">
+        <span class="badge" style="background:var(--greenBg);color:var(--greenFg)">Healthy</span>
+        <span class="badge" style="background:var(--greenBg);color:var(--greenFg)">Improving</span>
+        <span class="badge" style="background:var(--greenBg);color:var(--greenFg)">Compliant</span>
+        <span class="badge" style="background:var(--neutralBg);color:var(--neutralFg)">AI Foundry</span>
+        <span class="badge" style="background:var(--neutralBg);color:var(--neutralFg)">Pre-production</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================================= -->
+  <!-- SHADOW AGENTS  ★ NEW SECTION ★                             -->
+  <!-- ========================================================= -->
+  <div class="shadow-section" style="padding-left: 12px; margin-bottom: 36px;">
+    <div class="section-header">
+      <div>
+        <span class="section-title">Shadow Agents</span>
+        <span class="badge" style="background:var(--tealBg);color:var(--teal)">4 agents</span>
+        <span class="new-label" style="margin-left:8px">● Shadow Mode</span>
+      </div>
+    </div>
+
+    <!-- Info Banner -->
+    <div class="shadow-banner">
+      <span class="shadow-banner-icon">🔍</span>
+      <div>
+        <h3>Shadow Mode – Observe before you deploy</h3>
+        <p>Shadow agents run alongside production workflows <strong>without taking any actions</strong>. They receive the same inputs as production agents but their outputs are logged for comparison only. Use shadow mode to validate accuracy, measure latency, and build confidence before promoting to pre-production.</p>
+      </div>
+    </div>
+
+    <div class="agent-grid">
+      <!-- Shadow Card 1 -->
+      <div class="agent-card">
+        <span class="shadow-overlay">Shadow</span>
+        <div class="agent-card-header">
+          <div class="agent-icon" style="background:var(--teal)">AH</div>
+          <div class="agent-info">
+            <div class="agent-name">API Health Monitor</div>
+            <div class="agent-tags">Engineering · Grafana · Shadowing since Mar 2026</div>
+          </div>
+        </div>
+        <div class="agent-desc">Tracks API response times, error rates, and throughput, correlates anomalies with recent deployments, and suggests rollback if SLAs breach.</div>
+        <div class="badge-row">
+          <span class="badge" style="background:var(--tealBg);color:var(--tealFg)">Observing</span>
+          <span class="badge" style="background:var(--greenBg);color:var(--greenFg)">92% Match</span>
+          <span class="badge" style="background:var(--greenBg);color:var(--greenFg)">Compliant</span>
+          <span class="badge" style="background:var(--neutralBg);color:var(--neutralFg)">Other</span>
+          <span class="badge" style="background:var(--tealBg);color:var(--tealFg)">Shadow</span>
+        </div>
+      </div>
+      <!-- Shadow Card 2 -->
+      <div class="agent-card">
+        <span class="shadow-overlay">Shadow</span>
+        <div class="agent-card-header">
+          <div class="agent-icon" style="background:var(--red)">WC</div>
+          <div class="agent-info">
+            <div class="agent-name">Warranty Claims Agent</div>
+            <div class="agent-tags">CX · ServiceNow · Shadowing since Feb 2026</div>
+          </div>
+        </div>
+        <div class="agent-desc">Validates warranty coverage, processes replacement or repair claims, and tracks resolution timelines for customer service escalations.</div>
+        <div class="badge-row">
+          <span class="badge" style="background:var(--tealBg);color:var(--tealFg)">Observing</span>
+          <span class="badge" style="background:var(--yellowBg);color:var(--yellowFg)">78% Match</span>
+          <span class="badge" style="background:var(--greenBg);color:var(--greenFg)">Compliant</span>
+          <span class="badge" style="background:var(--neutralBg);color:var(--neutralFg)">MCS</span>
+          <span class="badge" style="background:var(--tealBg);color:var(--tealFg)">Shadow</span>
+        </div>
+      </div>
+      <!-- Shadow Card 3 (NEW) -->
+      <div class="agent-card">
+        <span class="shadow-overlay">Shadow</span>
+        <div class="agent-card-header">
+          <div class="agent-icon" style="background:var(--lavender)">ET</div>
+          <div class="agent-info">
+            <div class="agent-name">Email Triage v2</div>
+            <div class="agent-tags">Productivity · Communication · Shadowing since Apr 2026</div>
+          </div>
+        </div>
+        <div class="agent-desc">Next-gen email triage model shadowing the production Email Triage Assistant. Comparing categorization accuracy and reply quality side-by-side.</div>
+        <div class="badge-row">
+          <span class="badge" style="background:var(--tealBg);color:var(--tealFg)">Observing</span>
+          <span class="badge" style="background:var(--greenBg);color:var(--greenFg)">95% Match</span>
+          <span class="badge" style="background:var(--greenBg);color:var(--greenFg)">Compliant</span>
+          <span class="badge" style="background:var(--neutralBg);color:var(--neutralFg)">AI Foundry</span>
+          <span class="badge" style="background:var(--tealBg);color:var(--tealFg)">Shadow</span>
+        </div>
+      </div>
+      <!-- Shadow Card 4 (NEW) -->
+      <div class="agent-card">
+        <span class="shadow-overlay">Shadow</span>
+        <div class="agent-card-header">
+          <div class="agent-icon" style="background:var(--brand)">SI</div>
+          <div class="agent-info">
+            <div class="agent-name">Sales Insights v3</div>
+            <div class="agent-tags">Sales · Analytics · Shadowing since Apr 2026</div>
+          </div>
+        </div>
+        <div class="agent-desc">Updated sales insights model with improved churn prediction. Running in shadow against the production Sales Insights Agent to compare scoring accuracy.</div>
+        <div class="badge-row">
+          <span class="badge" style="background:var(--tealBg);color:var(--tealFg)">Observing</span>
+          <span class="badge" style="background:var(--redBg);color:var(--redFg)">64% Match</span>
+          <span class="badge" style="background:var(--greenBg);color:var(--greenFg)">Compliant</span>
+          <span class="badge" style="background:var(--neutralBg);color:var(--neutralFg)">AI Foundry</span>
+          <span class="badge" style="background:var(--tealBg);color:var(--tealFg)">Shadow</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+</body>
+</html>

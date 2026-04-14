@@ -1,0 +1,931 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Agent Catalog – Monitor &amp; Evaluations (Shadow Mode Mockup)</title>
+<style>
+  :root {
+    --bg1: #ffffff; --bg2: #f5f5f5; --bg3: #ebebeb;
+    --fg1: #242424; --fg3: #707070; --fg4: #999;
+    --stroke1: #d1d1d1; --stroke2: #e0e0e0;
+    --brand: #0078d4; --green: #107c10; --orange: #d83b01;
+    --teal: #038387; --yellow: #c19c00; --purple: #7719aa;
+    --red: #d13438; --lavender: #7160e8;
+    --greenBg: #dff6dd; --greenFg: #107c10;
+    --yellowBg: #fff4ce; --yellowFg: #c19c00;
+    --redBg: #fde7e9; --redFg: #d13438;
+    --neutralBg: #f0f0f0; --neutralFg: #707070;
+    --tealBg: #d6f0f0; --tealFg: #038387;
+    --shadow4: 0 2px 4px rgba(0,0,0,.08);
+    --shadow8: 0 2px 8px rgba(0,0,0,.1);
+    --shadow16: 0 4px 16px rgba(0,0,0,.12);
+    --radius-xl: 12px; --radius-lg: 8px; --radius-md: 6px; --radius-sm: 4px;
+    --navy: #1b1464;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background: var(--bg2); color: var(--fg1); }
+  a { color: var(--brand); text-decoration: none; }
+
+  /* Layout */
+  .page-header { padding: 32px 40px 0; background: var(--bg1); }
+  .page-header h1 { font-size: 28px; font-weight: 700; margin-bottom: 4px; }
+  .page-header p { font-size: 14px; color: var(--fg3); }
+  .refresh-bar { display: flex; justify-content: flex-end; align-items: center; gap: 12px; padding: 8px 0 0; font-size: 12px; color: var(--fg3); }
+  .refresh-bar button { font-size: 12px; padding: 4px 12px; border: 1px solid var(--stroke1); border-radius: var(--radius-md); background: var(--bg1); cursor: pointer; }
+  .divider { height: 1px; background: var(--stroke2); }
+  .page-body { padding: 24px 40px 40px; background: var(--bg2); }
+
+  /* Summary Card — Shadow KPIs (matches Power BI top row) */
+  .summary-card { background: var(--bg1); border-radius: var(--radius-xl); border: 1px solid var(--stroke2); margin-bottom: 24px; box-shadow: var(--shadow8); overflow: hidden; }
+  .summary-row { display: grid; grid-template-columns: repeat(5, 1fr); }
+  .summary-item { padding: 20px 24px 16px; border-right: 1px solid var(--stroke2); }
+  .summary-item:last-child { border-right: none; }
+  .summary-item-label { display: flex; align-items: center; gap: 6px; font-size: 14px; font-weight: 600; margin-bottom: 8px; }
+  .summary-item-value { font-size: 36px; font-weight: 700; line-height: 1.1; margin-bottom: 6px; }
+  .summary-item-desc { font-size: 14px; font-weight: 600; margin-bottom: 2px; }
+  .summary-item-sub { font-size: 12px; color: var(--fg3); }
+  .summary-footer { display: flex; align-items: center; border-top: 1px solid var(--stroke2); padding: 10px 24px; background: var(--bg2); font-size: 12px; font-weight: 600; color: var(--fg3); gap: 20px; }
+  .summary-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; margin-right: 6px; }
+
+  /* Section */
+  .section-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
+  .section-title { font-size: 18px; font-weight: 600; }
+
+  /* Agent Row */
+  .agent-list { display: flex; flex-direction: column; gap: 12px; margin-bottom: 32px; }
+  .agent-row {
+    display: flex; align-items: center; gap: 16px;
+    padding: 16px 24px; border-radius: var(--radius-xl);
+    border: 1px solid var(--stroke2); background: var(--bg1);
+    box-shadow: var(--shadow8); cursor: pointer;
+    transition: box-shadow .18s, background .18s;
+  }
+  .agent-row:hover { box-shadow: var(--shadow16); background: var(--bg2); }
+  .agent-row.shadow-row { border-left: 3px solid var(--teal); }
+  .agent-icon {
+    width: 32px; height: 32px; border-radius: var(--radius-lg);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 13px; color: #fff; font-weight: 600; flex-shrink: 0;
+  }
+  .agent-info { width: 200px; min-width: 200px; flex-shrink: 0; }
+  .agent-name { font-size: 14px; font-weight: 600; margin-bottom: 2px; }
+  .agent-meta { font-size: 12px; color: var(--fg4); }
+  .agent-badges { display: flex; align-items: center; gap: 6px; flex: 1; flex-wrap: wrap; }
+  .badge {
+    font-size: 11px; font-weight: 600; padding: 2px 8px;
+    border-radius: var(--radius-sm); white-space: nowrap;
+    display: inline-flex; align-items: center; gap: 4px;
+  }
+  .agent-metrics { display: flex; gap: 0; flex-shrink: 0; }
+  .metric-cell {
+    display: flex; flex-direction: column; align-items: center;
+    padding: 8px 16px; background: var(--bg2); border: 1px solid var(--stroke2);
+    min-width: 80px;
+  }
+  .metric-cell:first-child { border-radius: var(--radius-md) 0 0 var(--radius-md); }
+  .metric-cell:last-child { border-radius: 0 var(--radius-md) var(--radius-md) 0; border-left: none; }
+  .metric-label { font-size: 14px; font-weight: 600; color: var(--fg3); margin-bottom: 2px; }
+  .metric-value { font-size: 14px; font-weight: 700; }
+
+  /* Detail panel */
+  .detail-panel {
+    background: var(--bg1); border-radius: var(--radius-xl);
+    border: 1px solid var(--stroke2); box-shadow: var(--shadow8);
+    margin-bottom: 32px; overflow: hidden;
+  }
+  .panel-header {
+    display: flex; align-items: center; gap: 12px;
+    padding: 16px 24px; border-bottom: 1px solid var(--stroke2);
+  }
+  .panel-name { font-size: 18px; font-weight: 700; color: var(--brand); }
+  .panel-info-grid {
+    display: grid; grid-template-columns: repeat(3, 1fr);
+    padding: 12px 24px; border-bottom: 1px solid var(--stroke2);
+    background: var(--bg2); gap: 0;
+  }
+  .panel-info-item { padding: 6px 0; }
+  .panel-info-label { font-size: 14px; font-weight: 600; margin-bottom: 2px; }
+  .panel-info-value { font-size: 14px; color: var(--fg3); display: flex; align-items: center; gap: 6px; }
+  .panel-tabs {
+    display: flex; gap: 24px; padding: 0 24px;
+    border-bottom: 1px solid var(--stroke2);
+  }
+  .panel-tab {
+    font-size: 14px; font-weight: 600; padding: 8px 0;
+    border-bottom: 2px solid transparent; cursor: pointer;
+    color: var(--fg3); background: none; border-top: none; border-left: none; border-right: none;
+  }
+  .panel-tab.active { color: var(--brand); border-bottom-color: var(--brand); }
+  .panel-body { padding: 20px 24px; }
+  .panel-section-title { font-size: 14px; font-weight: 600; margin-bottom: 12px; margin-top: 4px; }
+
+  /* Metrics grid */
+  .metrics-row { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; margin-bottom: 24px; }
+  .metric-card {
+    border-radius: var(--radius-xl); border: 1px solid var(--stroke2); padding: 16px 20px;
+  }
+  .metric-card-label { font-size: 12px; font-weight: 600; color: var(--fg3); margin-bottom: 4px; }
+  .metric-card-value { font-size: 28px; font-weight: 700; }
+  .metric-card-sub { font-size: 11px; color: var(--fg4); margin-top: 4px; }
+
+  /* Comparison table */
+  .compare-table { width: 100%; border-collapse: collapse; margin-bottom: 24px; }
+  .compare-table th {
+    padding: 10px 16px; font-size: 12px; font-weight: 600;
+    text-transform: uppercase; letter-spacing: .4px; color: var(--fg3);
+    text-align: left; border-bottom: 1px solid var(--stroke2);
+    background: var(--bg2);
+  }
+  .compare-table td {
+    padding: 10px 16px; font-size: 14px; border-bottom: 1px solid var(--bg3);
+  }
+  .compare-table .metric-name { font-weight: 600; }
+  .compare-table .delta-good { color: var(--green); font-weight: 600; }
+  .compare-table .delta-warn { color: var(--yellow); font-weight: 600; }
+  .compare-table .delta-bad { color: var(--red); font-weight: 600; }
+
+  /* Shadow info banner */
+  .shadow-banner {
+    background: linear-gradient(135deg, var(--tealBg) 0%, #e8f6f6 100%);
+    border: 1px solid var(--teal); border-radius: var(--radius-xl);
+    padding: 16px 20px; margin-bottom: 20px; display: flex;
+    align-items: flex-start; gap: 12px;
+  }
+  .shadow-banner-icon { font-size: 20px; flex-shrink: 0; margin-top: 1px; }
+  .shadow-banner h3 { font-size: 14px; font-weight: 600; color: var(--teal); margin-bottom: 4px; }
+  .shadow-banner p { font-size: 13px; color: var(--fg3); line-height: 1.5; }
+
+  /* Chart area */
+  .chart-area { width: 100%; height: 180px; border-radius: var(--radius-lg); background: var(--bg2); border: 1px solid var(--stroke2); position: relative; overflow: hidden; margin-bottom: 8px; }
+  .chart-svg { width: 100%; height: 100%; }
+  .chart-legend { display: flex; justify-content: center; gap: 24px; font-size: 12px; color: var(--fg3); margin-bottom: 24px; }
+  .legend-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; margin-right: 6px; }
+
+  /* Pie chart section */
+  .charts-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 24px; }
+  .chart-card { border: 1px solid var(--stroke2); border-radius: var(--radius-xl); padding: 20px; background: var(--bg1); }
+  .chart-card h4 { font-size: 14px; font-weight: 600; margin-bottom: 16px; }
+  .pie-legend { display: flex; flex-direction: column; gap: 6px; margin-top: 12px; }
+  .pie-legend-item { display: flex; align-items: center; gap: 8px; font-size: 13px; }
+  .pie-swatch { width: 12px; height: 12px; border-radius: 2px; flex-shrink: 0; }
+
+  /* Flow diagram */
+  .flow-section { border: 1px solid var(--stroke2); border-radius: var(--radius-xl); padding: 24px; background: var(--bg1); margin-bottom: 24px; }
+  .flow-section h4 { font-size: 14px; font-weight: 600; margin-bottom: 16px; color: var(--fg1); }
+  .flow-row { display: flex; align-items: stretch; gap: 0; margin-bottom: 16px; }
+  .flow-node {
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    padding: 12px 20px; border: 2px solid var(--navy); border-radius: var(--radius-lg);
+    min-width: 130px; text-align: center; background: var(--bg1);
+  }
+  .flow-node-label { font-size: 12px; font-weight: 600; color: var(--fg1); }
+  .flow-node-value { font-size: 22px; font-weight: 700; color: var(--navy); }
+  .flow-connector {
+    display: flex; align-items: center; padding: 0 8px;
+  }
+  .flow-connector::after {
+    content: ''; display: block; width: 32px; height: 2px; background: var(--navy);
+  }
+  .flow-branch { display: flex; flex-direction: column; gap: 12px; }
+  .flow-branch-row { display: flex; align-items: center; gap: 0; }
+  .flow-sub-node {
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    padding: 8px 14px; border: 1.5px solid var(--stroke1); border-radius: var(--radius-md);
+    min-width: 100px; text-align: center; background: var(--bg1); font-size: 11px;
+  }
+  .flow-sub-label { font-weight: 600; color: var(--fg3); }
+  .flow-sub-value { font-size: 16px; font-weight: 700; color: var(--fg1); }
+  .flow-arrow { padding: 0 6px; color: var(--navy); font-size: 14px; }
+
+  /* Bottom grid */
+  .bottom-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; }
+  .bottom-row { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; font-size: 14px; border-bottom: 1px solid var(--bg3); }
+  .bottom-label { color: var(--fg3); }
+  .bottom-value { font-weight: 600; display: flex; align-items: center; gap: 6px; }
+  .status-dot { width: 6px; height: 6px; border-radius: 50%; display: inline-block; }
+
+  /* Promote button */
+  .promote-btn {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 6px 16px; border-radius: var(--radius-md);
+    border: 1px solid var(--teal); background: var(--teal); color: #fff;
+    font-size: 13px; font-weight: 600; cursor: pointer;
+    transition: background .15s;
+  }
+  .promote-btn:hover { background: #026d70; }
+  .promote-outline {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 6px 16px; border-radius: var(--radius-md);
+    border: 1px solid var(--teal); background: transparent; color: var(--teal);
+    font-size: 13px; font-weight: 600; cursor: pointer;
+  }
+
+  /* Label */
+  .new-label {
+    display: inline-flex; align-items: center; gap: 4px;
+    font-size: 11px; font-weight: 700; color: var(--teal);
+    background: var(--tealBg); padding: 2px 10px;
+    border-radius: 20px; text-transform: uppercase; letter-spacing: .5px;
+  }
+
+  /* DTP Scenarios bar */
+  .scenario-bar { display: flex; height: 24px; border-radius: var(--radius-md); overflow: hidden; margin-bottom: 8px; }
+  .scenario-bar-segment { display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 700; color: #fff; }
+
+  @media (max-width: 900px) {
+    .page-header, .page-body { padding-left: 20px; padding-right: 20px; }
+    .summary-row { grid-template-columns: repeat(2, 1fr); }
+    .metrics-row { grid-template-columns: 1fr; }
+    .bottom-grid { grid-template-columns: 1fr; }
+    .charts-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ======================== PAGE HEADER ======================== -->
+<div class="page-header">
+  <h1>Monitor &amp; Evaluations</h1>
+  <p>Monitor health, evaluations, and compliance for your agents. <a href="#">Manage</a> | <a href="#">Learn more about monitoring</a></p>
+  <div class="refresh-bar">
+    <span>Last refreshed: Apr 14, 2026, 12:36:46 PM (UTC)</span>
+    <button>🔄 Refresh now</button>
+  </div>
+</div>
+<div class="divider"></div>
+
+<div class="page-body">
+
+  <!-- ======================== SUMMARY CARD — Shadow KPIs ======================== -->
+  <div class="summary-card">
+    <div class="summary-row">
+      <div class="summary-item">
+        <div class="summary-item-label"><span style="color:var(--teal)">📊</span> AI Qualified Cases</div>
+        <div class="summary-item-value" style="color:var(--teal)">1,405</div>
+        <div class="summary-item-desc">Total shadow-processed</div>
+        <div class="summary-item-sub">Nov 2025 – Mar 2026</div>
+      </div>
+      <div class="summary-item">
+        <div class="summary-item-label"><span style="color:var(--fg3)">📅</span> Avg Case Age</div>
+        <div class="summary-item-value" style="color:var(--fg1)">38.6<span style="font-size:18px;color:var(--fg3)"> days</span></div>
+        <div class="summary-item-desc">Mean time in pipeline</div>
+        <div class="summary-item-sub">Shadow observation window</div>
+      </div>
+      <div class="summary-item">
+        <div class="summary-item-label"><span style="color:var(--green)">✓</span> AI Offered Solution</div>
+        <div class="summary-item-value" style="color:var(--green)">237</div>
+        <div class="summary-item-desc">16.9% of qualified cases</div>
+        <div class="summary-item-sub">Shadow agent provided answer</div>
+      </div>
+      <div class="summary-item">
+        <div class="summary-item-label"><span style="color:var(--brand)">💬</span> AI Requested More Info</div>
+        <div class="summary-item-value" style="color:var(--brand)">719</div>
+        <div class="summary-item-desc">51.2% of qualified cases</div>
+        <div class="summary-item-sub">Needed additional context</div>
+      </div>
+      <div class="summary-item">
+        <div class="summary-item-label"><span style="color:var(--red)">✕</span> AI Not Compatible</div>
+        <div class="summary-item-value" style="color:var(--red)">331</div>
+        <div class="summary-item-desc">23.6% of qualified cases</div>
+        <div class="summary-item-sub">Outside agent capability</div>
+      </div>
+    </div>
+    <div class="summary-footer">
+      <span><span class="summary-dot" style="background:var(--green)"></span>16.9% Offered Solution</span>
+      <span><span class="summary-dot" style="background:var(--brand)"></span>51.2% Requested More Info</span>
+      <span><span class="summary-dot" style="background:var(--red)"></span>23.6% Not Compatible</span>
+      <span><span class="summary-dot" style="background:var(--fg4)"></span>8.4% No Response (118)</span>
+    </div>
+  </div>
+
+  <!-- ======================== SHADOW AGENTS SECTION ======================== -->
+  <div class="section-header">
+    <div style="display:flex;align-items:center;gap:8px;">
+      <span class="section-title">Shadow Agents — DTP Shadow Report</span>
+      <span class="new-label">● Shadow Mode</span>
+    </div>
+    <div style="display:flex;align-items:center;gap:8px;font-size:12px;color:var(--fg3)">
+      <span>Date range: 11/11/2025 – 3/26/2026</span>
+    </div>
+  </div>
+
+  <div class="shadow-banner">
+    <span class="shadow-banner-icon">🔍</span>
+    <div>
+      <h3>Shadow evaluations running — BizApps Solution Agents</h3>
+      <p>These agents are processing support cases via the Shim pipeline. Shadow agents observe <strong>2,018 total cases</strong> routed through Licensing, Throttling, and Approvals scenarios. Outputs are logged and compared but <strong>never delivered to end users</strong>.</p>
+    </div>
+  </div>
+
+  <div class="agent-list">
+    <!-- Shadow Agent 1 — BizApps Agent -->
+    <div class="agent-row shadow-row">
+      <div class="agent-icon" style="background:var(--brand)">BA</div>
+      <div class="agent-info">
+        <div class="agent-name">BizApps Agent <span style="font-size:11px;color:var(--teal);font-weight:700">(Shadow)</span></div>
+        <div class="agent-meta">DTP · BizApps Solution · 836 cases</div>
+      </div>
+      <div class="agent-badges">
+        <span class="badge" style="background:var(--tealBg);color:var(--tealFg)">🔍 Observing</span>
+        <span class="badge" style="background:var(--greenBg);color:var(--greenFg)">✓ 16.9% Solution Rate</span>
+        <span class="badge" style="background:var(--neutralBg);color:var(--neutralFg)">Licensing · Throttling · Approvals</span>
+      </div>
+      <div class="agent-metrics">
+        <div class="metric-cell" style="background:var(--tealBg);border-color:var(--teal)">
+          <span class="metric-label" style="color:var(--tealFg)">Cases</span>
+          <span class="metric-value" style="color:var(--tealFg)">836</span>
+        </div>
+        <div class="metric-cell">
+          <span class="metric-label">Resolved</span>
+          <span class="metric-value" style="color:var(--green)">924</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Shadow Agent 2 — BizApps Flow Perf Agent -->
+    <div class="agent-row shadow-row">
+      <div class="agent-icon" style="background:var(--orange)">FP</div>
+      <div class="agent-info">
+        <div class="agent-name">BizApps Flow Perf Agent <span style="font-size:11px;color:var(--teal);font-weight:700">(Shadow)</span></div>
+        <div class="agent-meta">DTP · Performance Analysis · 334 cases</div>
+      </div>
+      <div class="agent-badges">
+        <span class="badge" style="background:var(--tealBg);color:var(--tealFg)">🔍 Observing</span>
+        <span class="badge" style="background:var(--yellowBg);color:var(--yellowFg)">⚠ Throttling-heavy</span>
+        <span class="badge" style="background:var(--neutralBg);color:var(--neutralFg)">Throttling</span>
+      </div>
+      <div class="agent-metrics">
+        <div class="metric-cell" style="background:var(--tealBg);border-color:var(--teal)">
+          <span class="metric-label" style="color:var(--tealFg)">Cases</span>
+          <span class="metric-value" style="color:var(--tealFg)">334</span>
+        </div>
+        <div class="metric-cell">
+          <span class="metric-label">Triggered</span>
+          <span class="metric-value">1,238</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Shadow Agent 3 — BizApps Licensing Agent -->
+    <div class="agent-row shadow-row">
+      <div class="agent-icon" style="background:var(--purple)">LA</div>
+      <div class="agent-info">
+        <div class="agent-name">BizApps Licensing Agent <span style="font-size:11px;color:var(--teal);font-weight:700">(Shadow)</span></div>
+        <div class="agent-meta">DTP · License Resolution · 235 cases</div>
+      </div>
+      <div class="agent-badges">
+        <span class="badge" style="background:var(--tealBg);color:var(--tealFg)">🔍 Observing</span>
+        <span class="badge" style="background:var(--greenBg);color:var(--greenFg)">✓ 140 Know Me responses</span>
+        <span class="badge" style="background:var(--neutralBg);color:var(--neutralFg)">Licensing</span>
+      </div>
+      <div class="agent-metrics">
+        <div class="metric-cell" style="background:var(--tealBg);border-color:var(--teal)">
+          <span class="metric-label" style="color:var(--tealFg)">Cases</span>
+          <span class="metric-value" style="color:var(--tealFg)">235</span>
+        </div>
+        <div class="metric-cell">
+          <span class="metric-label">Responses</span>
+          <span class="metric-value">119</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Shadow Agent 4 — BizApps Approvals Agent -->
+    <div class="agent-row shadow-row">
+      <div class="agent-icon" style="background:var(--yellow)">AP</div>
+      <div class="agent-info">
+        <div class="agent-name">BizApps Approvals Agent <span style="font-size:11px;color:var(--teal);font-weight:700">(Shadow)</span></div>
+        <div class="agent-meta">DTP · Approval Workflows · Remaining cases</div>
+      </div>
+      <div class="agent-badges">
+        <span class="badge" style="background:var(--tealBg);color:var(--tealFg)">🔍 Observing</span>
+        <span class="badge" style="background:var(--yellowBg);color:var(--yellowFg)">⚠ Low volume</span>
+        <span class="badge" style="background:var(--neutralBg);color:var(--neutralFg)">Approvals</span>
+      </div>
+      <div class="agent-metrics">
+        <div class="metric-cell" style="background:var(--tealBg);border-color:var(--teal)">
+          <span class="metric-label" style="color:var(--tealFg)">Triggered</span>
+          <span class="metric-value" style="color:var(--tealFg)">269</span>
+        </div>
+        <div class="metric-cell">
+          <span class="metric-label">Responses</span>
+          <span class="metric-value">4</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ======================== DETAIL: Shadow Drilldown — BizApps Agent ======================== -->
+  <div class="detail-panel">
+    <div class="panel-header">
+      <div class="agent-icon" style="background:var(--brand)">BA</div>
+      <div style="flex:1">
+        <div style="display:flex;align-items:center;gap:8px;">
+          <span class="panel-name">BizApps Agent — Shadow Drilldown</span>
+          <span class="badge" style="background:var(--tealBg);color:var(--tealFg)">🔍 Shadow</span>
+        </div>
+        <div style="font-size:12px;color:var(--fg4);margin-top:2px">DTP · BizApps Solution Agents · Date range: 11/11/2025 – 3/26/2026</div>
+      </div>
+      <button class="promote-btn">⬆ Promote to Pre-production</button>
+      <button class="promote-outline">⏸ Pause shadow</button>
+    </div>
+
+    <div class="panel-info-grid">
+      <div class="panel-info-item">
+        <div class="panel-info-label">Pipeline Entry</div>
+        <div class="panel-info-value">🎯 Shim → BizAppsSolution Agents (2,018)</div>
+      </div>
+      <div class="panel-info-item">
+        <div class="panel-info-label">Mode</div>
+        <div class="panel-info-value"><span style="color:var(--teal)">●</span> Shadow observe-only</div>
+      </div>
+      <div class="panel-info-item">
+        <div class="panel-info-label">Observation Window</div>
+        <div class="panel-info-value">📅 ~4.5 months (Nov 2025 – Mar 2026)</div>
+      </div>
+      <div class="panel-info-item">
+        <div class="panel-info-label">AI Qualified Cases</div>
+        <div class="panel-info-value">📊 1,405 total</div>
+      </div>
+      <div class="panel-info-item">
+        <div class="panel-info-label">Avg Case Age</div>
+        <div class="panel-info-value">🕐 38.6 days</div>
+      </div>
+      <div class="panel-info-item">
+        <div class="panel-info-label">Support Area</div>
+        <div class="panel-info-value">🏢 Azure/Billing, Blob Storage, Marketplace</div>
+      </div>
+    </div>
+
+    <div class="panel-tabs">
+      <button class="panel-tab active">Shadow Metrics</button>
+      <button class="panel-tab">Agent Trigger Flow</button>
+      <button class="panel-tab">Case Status (DFM)</button>
+      <button class="panel-tab">Request Rate</button>
+      <button class="panel-tab">Compliance</button>
+    </div>
+
+    <div class="panel-body">
+
+      <!-- Shadow KPI Cards — matching Power BI top row -->
+      <div class="panel-section-title">Shadow Case Outcomes — AI Response Classification</div>
+      <div class="metrics-row">
+        <div class="metric-card" style="border-color:var(--teal)">
+          <div class="metric-card-label">AI Qualified Cases</div>
+          <div class="metric-card-value" style="color:var(--teal)">1,405</div>
+          <div class="metric-card-sub">Total cases processed by shadow</div>
+        </div>
+        <div class="metric-card" style="border-color:var(--green)">
+          <div class="metric-card-label">AI Offered Solution</div>
+          <div class="metric-card-value" style="color:var(--green)">237</div>
+          <div class="metric-card-sub">16.9% — Shadow provided an answer</div>
+        </div>
+        <div class="metric-card" style="border-color:var(--brand)">
+          <div class="metric-card-label">AI Requested More Info</div>
+          <div class="metric-card-value" style="color:var(--brand)">719</div>
+          <div class="metric-card-sub">51.2% — Needed additional context</div>
+        </div>
+        <div class="metric-card" style="border-color:var(--red)">
+          <div class="metric-card-label">AI Not Compatible</div>
+          <div class="metric-card-value" style="color:var(--red)">331</div>
+          <div class="metric-card-sub">23.6% — Outside agent capability</div>
+        </div>
+        <div class="metric-card" style="border-color:var(--fg4)">
+          <div class="metric-card-label">No Response</div>
+          <div class="metric-card-value" style="color:var(--fg4)">118</div>
+          <div class="metric-card-sub">8.4% — No AI output generated</div>
+        </div>
+      </div>
+
+      <!-- Case Status Pie Charts (side by side) -->
+      <div class="charts-grid">
+        <!-- BizApps Case Status Pie -->
+        <div class="chart-card">
+          <h4>Cases Status as per BizApps Agent</h4>
+          <div style="display:flex;align-items:center;gap:24px;">
+            <svg viewBox="0 0 200 200" width="180" height="180">
+              <!-- AI Requested More Info: 719/1405 = 51.2% -->
+              <circle cx="100" cy="100" r="80" fill="none" stroke="#0078d4" stroke-width="40"
+                stroke-dasharray="257.6 244.0" stroke-dashoffset="0" transform="rotate(-90 100 100)"/>
+              <!-- AI Not Compatible: 331/1405 = 23.6% -->
+              <circle cx="100" cy="100" r="80" fill="none" stroke="#1b1464" stroke-width="40"
+                stroke-dasharray="118.4 383.2" stroke-dashoffset="-257.6" transform="rotate(-90 100 100)"/>
+              <!-- AI Offered Solution: 237/1405 = 16.9% -->
+              <circle cx="100" cy="100" r="80" fill="none" stroke="#d83b01" stroke-width="40"
+                stroke-dasharray="84.8 416.8" stroke-dashoffset="-376.0" transform="rotate(-90 100 100)"/>
+              <!-- No Response: 118/1405 = 8.4% -->
+              <circle cx="100" cy="100" r="80" fill="none" stroke="#7719aa" stroke-width="40"
+                stroke-dasharray="42.2 459.4" stroke-dashoffset="-460.8" transform="rotate(-90 100 100)"/>
+              <!-- Center label -->
+              <text x="100" y="95" text-anchor="middle" font-size="22" font-weight="700" fill="#242424">1,405</text>
+              <text x="100" y="115" text-anchor="middle" font-size="11" fill="#707070">Total Cases</text>
+            </svg>
+            <div class="pie-legend">
+              <div class="pie-legend-item"><span class="pie-swatch" style="background:#0078d4"></span> AI Requested More Info — <strong>719</strong></div>
+              <div class="pie-legend-item"><span class="pie-swatch" style="background:#1b1464"></span> AI Not Compatible — <strong>331</strong></div>
+              <div class="pie-legend-item"><span class="pie-swatch" style="background:#d83b01"></span> AI Offered Solution — <strong>237</strong></div>
+              <div class="pie-legend-item"><span class="pie-swatch" style="background:#7719aa"></span> No Response — <strong>118</strong></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Case Status in DFM Pie -->
+        <div class="chart-card">
+          <h4>Total Cases by Case Status in DFM</h4>
+          <div style="display:flex;align-items:center;gap:24px;">
+            <svg viewBox="0 0 200 200" width="180" height="180">
+              <!-- Resolved: 924 (dominant) -->
+              <circle cx="100" cy="100" r="80" fill="none" stroke="#0078d4" stroke-width="40"
+                stroke-dasharray="326.7 175.0" stroke-dashoffset="0" transform="rotate(-90 100 100)"/>
+              <!-- Troubleshooting: 116 -->
+              <circle cx="100" cy="100" r="80" fill="none" stroke="#c19c00" stroke-width="40"
+                stroke-dasharray="41.0 460.7" stroke-dashoffset="-326.7" transform="rotate(-90 100 100)"/>
+              <!-- Un-resolved: 88 -->
+              <circle cx="100" cy="100" r="80" fill="none" stroke="#d83b01" stroke-width="40"
+                stroke-dasharray="31.1 470.6" stroke-dashoffset="-367.7" transform="rotate(-90 100 100)"/>
+              <!-- Disconnect/Hang: 82 -->
+              <circle cx="100" cy="100" r="80" fill="none" stroke="#1b1464" stroke-width="40"
+                stroke-dasharray="29.0 472.7" stroke-dashoffset="-398.8" transform="rotate(-90 100 100)"/>
+              <!-- Others: 64+31+20+16+5 = 136 -->
+              <circle cx="100" cy="100" r="80" fill="none" stroke="#999" stroke-width="40"
+                stroke-dasharray="48.1 453.6" stroke-dashoffset="-427.8" transform="rotate(-90 100 100)"/>
+              <text x="100" y="95" text-anchor="middle" font-size="22" font-weight="700" fill="#242424">924</text>
+              <text x="100" y="115" text-anchor="middle" font-size="11" fill="#707070">Resolved</text>
+            </svg>
+            <div class="pie-legend">
+              <div class="pie-legend-item"><span class="pie-swatch" style="background:#0078d4"></span> Resolved — <strong>924</strong></div>
+              <div class="pie-legend-item"><span class="pie-swatch" style="background:#c19c00"></span> Troubleshooting — <strong>116</strong></div>
+              <div class="pie-legend-item"><span class="pie-swatch" style="background:#d83b01"></span> Un-resolved — <strong>88</strong></div>
+              <div class="pie-legend-item"><span class="pie-swatch" style="background:#1b1464"></span> Disconnect/Hang — <strong>82</strong></div>
+              <div class="pie-legend-item"><span class="pie-swatch" style="background:#999"></span> Other (Pending, Mitigated…) — <strong>195</strong></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Agent Trigger Flow Diagram -->
+      <div class="flow-section">
+        <h4>🔀 Agent Trigger Flow — Instances Where Agent Was Triggered</h4>
+        <div style="display:flex;align-items:center;gap:0;margin-bottom:24px;">
+          <div class="flow-node" style="border-color:var(--navy);background:#f0f0ff">
+            <div class="flow-node-label">Shim → BizApps</div>
+            <div class="flow-node-value">2,018</div>
+          </div>
+          <div class="flow-connector"></div>
+          <div class="flow-branch">
+            <!-- Licensing Branch -->
+            <div class="flow-branch-row">
+              <div class="flow-node" style="min-width:110px">
+                <div class="flow-node-label">Licensing</div>
+                <div class="flow-node-value">511</div>
+              </div>
+              <span class="flow-arrow">→</span>
+              <div class="flow-sub-node">
+                <div class="flow-sub-label">Inbound Email</div>
+                <div class="flow-sub-value">0</div>
+              </div>
+              <span class="flow-arrow">·</span>
+              <div class="flow-sub-node">
+                <div class="flow-sub-label">Know Me Licensing</div>
+                <div class="flow-sub-value">140</div>
+              </div>
+              <span class="flow-arrow">→</span>
+              <div class="flow-sub-node" style="border-color:var(--teal)">
+                <div class="flow-sub-label">Responses</div>
+                <div class="flow-sub-value" style="color:var(--teal)">119</div>
+              </div>
+              <span class="flow-arrow">·</span>
+              <div class="flow-sub-node">
+                <div class="flow-sub-label">Case Tool</div>
+                <div class="flow-sub-value">83</div>
+              </div>
+              <span class="flow-arrow">→</span>
+              <div class="flow-sub-node" style="border-color:var(--teal)">
+                <div class="flow-sub-label">Responses</div>
+                <div class="flow-sub-value" style="color:var(--teal)">83</div>
+              </div>
+            </div>
+
+            <!-- Throttling Branch -->
+            <div class="flow-branch-row">
+              <div class="flow-node" style="min-width:110px">
+                <div class="flow-node-label">Throttling</div>
+                <div class="flow-node-value">1,238</div>
+              </div>
+              <span class="flow-arrow">→</span>
+              <div class="flow-sub-node">
+                <div class="flow-sub-label">Inbound Email</div>
+                <div class="flow-sub-value">783</div>
+              </div>
+              <span class="flow-arrow">·</span>
+              <div class="flow-sub-node">
+                <div class="flow-sub-label">Kusto Troubleshoot</div>
+                <div class="flow-sub-value">47</div>
+              </div>
+              <span class="flow-arrow">→</span>
+              <div class="flow-sub-node" style="border-color:var(--teal)">
+                <div class="flow-sub-label">Responses</div>
+                <div class="flow-sub-value" style="color:var(--teal)">47</div>
+              </div>
+              <span class="flow-arrow">·</span>
+              <div class="flow-sub-node">
+                <div class="flow-sub-label">Case Tool</div>
+                <div class="flow-sub-value">300</div>
+              </div>
+              <span class="flow-arrow">→</span>
+              <div class="flow-sub-node" style="border-color:var(--teal)">
+                <div class="flow-sub-label">Responses</div>
+                <div class="flow-sub-value" style="color:var(--teal)">300</div>
+              </div>
+            </div>
+
+            <!-- Approvals Branch -->
+            <div class="flow-branch-row">
+              <div class="flow-node" style="min-width:110px">
+                <div class="flow-node-label">Approvals</div>
+                <div class="flow-node-value">269</div>
+              </div>
+              <span class="flow-arrow">→</span>
+              <div class="flow-sub-node">
+                <div class="flow-sub-label">Inbound Email</div>
+                <div class="flow-sub-value">63</div>
+              </div>
+              <span class="flow-arrow">·</span>
+              <div class="flow-sub-node">
+                <div class="flow-sub-label">Kusto Troubleshoot</div>
+                <div class="flow-sub-value">7</div>
+              </div>
+              <span class="flow-arrow">→</span>
+              <div class="flow-sub-node" style="border-color:var(--teal)">
+                <div class="flow-sub-label">Responses</div>
+                <div class="flow-sub-value" style="color:var(--teal)">7</div>
+              </div>
+              <span class="flow-arrow">·</span>
+              <div class="flow-sub-node">
+                <div class="flow-sub-label">Case Tool</div>
+                <div class="flow-sub-value">4</div>
+              </div>
+              <span class="flow-arrow">→</span>
+              <div class="flow-sub-node" style="border-color:var(--teal)">
+                <div class="flow-sub-label">Responses</div>
+                <div class="flow-sub-value" style="color:var(--teal)">4</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Shadow vs Production Comparison Table -->
+      <div class="panel-section-title">Shadow vs Production — Key Metric Differences</div>
+      <table class="compare-table">
+        <thead>
+          <tr>
+            <th>Metric</th>
+            <th>Production</th>
+            <th>Shadow</th>
+            <th>Delta</th>
+            <th>Assessment</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="metric-name">AI Qualified Cases</td>
+            <td>N/A (live)</td>
+            <td>1,405</td>
+            <td style="color:var(--fg3)">—</td>
+            <td><span class="badge" style="background:var(--tealBg);color:var(--tealFg)">Shadow-only metric</span></td>
+          </tr>
+          <tr>
+            <td class="metric-name">AI Offered Solution Rate</td>
+            <td>—</td>
+            <td>16.9% (237)</td>
+            <td style="color:var(--fg3)">—</td>
+            <td><span class="badge" style="background:var(--yellowBg);color:var(--yellowFg)">⚠ Low — needs improvement</span></td>
+          </tr>
+          <tr>
+            <td class="metric-name">AI Requested More Info Rate</td>
+            <td>—</td>
+            <td>51.2% (719)</td>
+            <td style="color:var(--fg3)">—</td>
+            <td><span class="badge" style="background:var(--yellowBg);color:var(--yellowFg)">⚠ High — context gaps</span></td>
+          </tr>
+          <tr>
+            <td class="metric-name">AI Not Compatible Rate</td>
+            <td>—</td>
+            <td>23.6% (331)</td>
+            <td style="color:var(--fg3)">—</td>
+            <td><span class="badge" style="background:var(--redBg);color:var(--redFg)">✕ Coverage gap</span></td>
+          </tr>
+          <tr>
+            <td class="metric-name">Case Resolution (DFM)</td>
+            <td>Baseline TBD</td>
+            <td>924 resolved</td>
+            <td style="color:var(--fg3)">—</td>
+            <td><span class="badge" style="background:var(--greenBg);color:var(--greenFg)">✓ 65.8% resolution rate</span></td>
+          </tr>
+          <tr>
+            <td class="metric-name">Avg Case Age</td>
+            <td>Baseline TBD</td>
+            <td>38.6 days</td>
+            <td style="color:var(--fg3)">—</td>
+            <td><span class="badge" style="background:var(--yellowBg);color:var(--yellowFg)">⚠ Monitor for improvement</span></td>
+          </tr>
+          <tr>
+            <td class="metric-name">Agent Trigger Volume</td>
+            <td>N/A</td>
+            <td>2,018 (via Shim)</td>
+            <td style="color:var(--fg3)">—</td>
+            <td><span class="badge" style="background:var(--tealBg);color:var(--tealFg)">Shadow pipeline active</span></td>
+          </tr>
+          <tr>
+            <td class="metric-name">No Response Rate</td>
+            <td>—</td>
+            <td>8.4% (118)</td>
+            <td style="color:var(--fg3)">—</td>
+            <td><span class="badge" style="background:var(--yellowBg);color:var(--yellowFg)">⚠ Investigate failures</span></td>
+          </tr>
+        </tbody>
+      </table>
+
+      <!-- Agent Level Request Rate Chart -->
+      <div class="panel-section-title" style="display:flex;align-items:center;gap:6px;">📈 Agent Level Request Rate <span style="font-size:12px;color:var(--fg4);font-weight:400;margin-left:auto">Dec 2025 – Mar 2026</span></div>
+      <div class="chart-area" style="height:200px">
+        <svg class="chart-svg" viewBox="0 0 800 200" preserveAspectRatio="none">
+          <!-- Grid lines -->
+          <line x1="50" y1="20" x2="780" y2="20" stroke="#e0e0e0" stroke-width="1" stroke-dasharray="4,3"/>
+          <line x1="50" y1="60" x2="780" y2="60" stroke="#e0e0e0" stroke-width="1" stroke-dasharray="4,3"/>
+          <line x1="50" y1="100" x2="780" y2="100" stroke="#e0e0e0" stroke-width="1" stroke-dasharray="4,3"/>
+          <line x1="50" y1="140" x2="780" y2="140" stroke="#e0e0e0" stroke-width="1" stroke-dasharray="4,3"/>
+          <line x1="50" y1="180" x2="780" y2="180" stroke="#e0e0e0" stroke-width="1"/>
+          <!-- Y-axis labels -->
+          <text x="45" y="24" text-anchor="end" font-size="10" fill="#999">300</text>
+          <text x="45" y="64" text-anchor="end" font-size="10" fill="#999">200</text>
+          <text x="45" y="104" text-anchor="end" font-size="10" fill="#999">100</text>
+          <text x="45" y="144" text-anchor="end" font-size="10" fill="#999">50</text>
+          <text x="45" y="184" text-anchor="end" font-size="10" fill="#999">0</text>
+          <!-- X-axis labels -->
+          <text x="130" y="196" text-anchor="middle" font-size="10" fill="#999">Dec 2025</text>
+          <text x="310" y="196" text-anchor="middle" font-size="10" fill="#999">Jan 2026</text>
+          <text x="490" y="196" text-anchor="middle" font-size="10" fill="#999">Feb 2026</text>
+          <text x="670" y="196" text-anchor="middle" font-size="10" fill="#999">Mar 2026</text>
+          <!-- Case Tool (blue) — spiky pattern matching PBI -->
+          <polyline points="80,175 100,172 120,20 140,170 160,175 180,173 200,168 220,175 240,173 260,175 280,172 300,170 320,175 340,173 360,175 380,172 400,175 420,170 440,175 460,173 480,175 500,173 520,172 540,175 560,173 580,175 600,173 620,170 640,175 660,173 680,175 700,173 720,175 740,173 760,175" fill="none" stroke="#0078d4" stroke-width="2.5"/>
+          <!-- Kusto Troubleshooting Agent (orange) — low flat line -->
+          <polyline points="80,178 120,176 160,178 200,177 240,178 280,177 320,178 360,177 400,178 440,177 480,178 520,177 560,178 600,177 640,178 680,177 720,178 760,177" fill="none" stroke="#d83b01" stroke-width="2"/>
+          <!-- Licensing Agent (red) — spike in early Dec then low -->
+          <polyline points="80,175 100,168 120,60 140,172 160,178 200,177 240,178 280,177 320,178 360,177 400,178 440,177 480,178 520,177 560,178 600,177 640,178 680,177 720,178 760,177" fill="none" stroke="#d13438" stroke-width="2"/>
+        </svg>
+      </div>
+      <div class="chart-legend">
+        <span><span class="legend-dot" style="background:#0078d4"></span>Case Tool</span>
+        <span><span class="legend-dot" style="background:#d83b01"></span>Kusto Troubleshooting Agent</span>
+        <span><span class="legend-dot" style="background:#d13438"></span>Licensing Agent</span>
+      </div>
+
+      <!-- DTP Scenarios Breakdown -->
+      <div class="panel-section-title">DTP Scenarios Breakdown</div>
+      <div class="scenario-bar">
+        <div class="scenario-bar-segment" style="background:var(--brand);flex:836">836</div>
+        <div class="scenario-bar-segment" style="background:var(--orange);flex:334">334</div>
+        <div class="scenario-bar-segment" style="background:var(--purple);flex:235">235</div>
+        <div class="scenario-bar-segment" style="background:var(--yellow);flex:100;font-size:9px"></div>
+      </div>
+      <div class="chart-legend" style="justify-content:flex-start;gap:20px;">
+        <span><span class="legend-dot" style="background:var(--brand)"></span>BizApps Agent (836)</span>
+        <span><span class="legend-dot" style="background:var(--orange)"></span>BizApps Flow Perf Agent (334)</span>
+        <span><span class="legend-dot" style="background:var(--purple)"></span>BizApps Licensing Agent (235)</span>
+        <span><span class="legend-dot" style="background:var(--yellow)"></span>BizApps Approvals Agent</span>
+      </div>
+
+      <!-- Bottom Details Grid -->
+      <div class="bottom-grid">
+        <div>
+          <div class="panel-section-title">Shadow Evaluation Checks</div>
+          <div class="bottom-row">
+            <span class="bottom-label">AI Solution Rate</span>
+            <span class="bottom-value"><span class="status-dot" style="background:var(--yellow)"></span> 16.9% — Below target (25%)</span>
+          </div>
+          <div class="bottom-row">
+            <span class="bottom-label">Case Resolution (DFM)</span>
+            <span class="bottom-value"><span class="status-dot" style="background:var(--green)"></span> 924 resolved (65.8%)</span>
+          </div>
+          <div class="bottom-row">
+            <span class="bottom-label">AI Compatibility</span>
+            <span class="bottom-value"><span class="status-dot" style="background:var(--yellow)"></span> 76.4% compatible</span>
+          </div>
+          <div class="bottom-row">
+            <span class="bottom-label">No Response Rate</span>
+            <span class="bottom-value"><span class="status-dot" style="background:var(--yellow)"></span> 8.4% — Investigate</span>
+          </div>
+          <div class="bottom-row">
+            <span class="bottom-label">Agent Trigger Pipeline</span>
+            <span class="bottom-value"><span class="status-dot" style="background:var(--green)"></span> Active (2,018 routed)</span>
+          </div>
+        </div>
+        <div>
+          <div class="panel-section-title">Promotion Readiness</div>
+          <div class="bottom-row">
+            <span class="bottom-label">Min shadow duration (30 days)</span>
+            <span class="bottom-value"><span class="status-dot" style="background:var(--green)"></span> ✓ ~135 days</span>
+          </div>
+          <div class="bottom-row">
+            <span class="bottom-label">Min qualified cases (500)</span>
+            <span class="bottom-value"><span class="status-dot" style="background:var(--green)"></span> ✓ 1,405</span>
+          </div>
+          <div class="bottom-row">
+            <span class="bottom-label">AI Solution Rate ≥ 25%</span>
+            <span class="bottom-value"><span class="status-dot" style="background:var(--red)"></span> ✕ 16.9%</span>
+          </div>
+          <div class="bottom-row">
+            <span class="bottom-label">AI Not Compatible ≤ 15%</span>
+            <span class="bottom-value"><span class="status-dot" style="background:var(--red)"></span> ✕ 23.6%</span>
+          </div>
+          <div class="bottom-row" style="border-bottom:2px solid var(--red);padding-bottom:12px;margin-top:8px">
+            <span class="bottom-label" style="font-weight:700;color:var(--fg1)">Ready to promote?</span>
+            <span class="bottom-value" style="color:var(--red);font-size:15px">⛔ Not yet — 2 criteria unmet</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ======================== PRODUCTION AGENTS ======================== -->
+  <div class="section-header">
+    <span class="section-title">Production Agents</span>
+  </div>
+  <div class="agent-list">
+    <div class="agent-row">
+      <div class="agent-icon" style="background:var(--orange)">SI</div>
+      <div class="agent-info">
+        <div class="agent-name">Sales Insights Agent</div>
+        <div class="agent-meta">Sales Eng</div>
+      </div>
+      <div class="agent-badges">
+        <span class="badge" style="background:var(--greenBg);color:var(--greenFg)">✓ Healthy</span>
+        <span class="badge" style="background:var(--greenBg);color:var(--greenFg)">✓ Compliant</span>
+        <span class="badge" style="background:var(--neutralBg);color:var(--neutralFg)">AI Foundry</span>
+      </div>
+      <div class="agent-metrics">
+        <div class="metric-cell" style="background:var(--greenBg);border-color:var(--green)">
+          <span class="metric-label" style="color:var(--greenFg)">Compliance</span>
+          <span class="metric-value" style="color:var(--greenFg)">100%</span>
+        </div>
+        <div class="metric-cell">
+          <span class="metric-label">Checks</span>
+          <span class="metric-value">1</span>
+        </div>
+      </div>
+    </div>
+    <div class="agent-row">
+      <div class="agent-icon" style="background:var(--brand)">ET</div>
+      <div class="agent-info">
+        <div class="agent-name">Email Triage Assistant</div>
+        <div class="agent-meta">Productivity</div>
+      </div>
+      <div class="agent-badges">
+        <span class="badge" style="background:var(--yellowBg);color:var(--yellowFg)">⚠ Degraded</span>
+        <span class="badge" style="background:var(--redBg);color:var(--redFg)">✕ Non-compliant</span>
+        <span class="badge" style="background:var(--redBg);color:var(--redFg)">4 High</span>
+        <span class="badge" style="background:var(--neutralBg);color:var(--neutralFg)">AI Foundry</span>
+      </div>
+      <div class="agent-metrics">
+        <div class="metric-cell" style="background:var(--redBg);border-color:var(--red)">
+          <span class="metric-label" style="color:var(--redFg)">Compliance</span>
+          <span class="metric-value" style="color:var(--redFg)">50%</span>
+        </div>
+        <div class="metric-cell">
+          <span class="metric-label">Checks</span>
+          <span class="metric-value">1</span>
+        </div>
+      </div>
+    </div>
+    <div class="agent-row">
+      <div class="agent-icon" style="background:var(--brand)">IT</div>
+      <div class="agent-info">
+        <div class="agent-name">IT Support Agent</div>
+        <div class="agent-meta">IT Ops</div>
+      </div>
+      <div class="agent-badges">
+        <span class="badge" style="background:var(--redBg);color:var(--redFg)">✕ Unhealthy</span>
+        <span class="badge" style="background:var(--redBg);color:var(--redFg)">✕ Non-compliant</span>
+        <span class="badge" style="background:var(--redBg);color:var(--redFg)">SEV 2</span>
+        <span class="badge" style="background:var(--neutralBg);color:var(--neutralFg)">MCS</span>
+      </div>
+      <div class="agent-metrics">
+        <div class="metric-cell" style="background:var(--redBg);border-color:var(--red)">
+          <span class="metric-label" style="color:var(--redFg)">Compliance</span>
+          <span class="metric-value" style="color:var(--redFg)">50%</span>
+        </div>
+        <div class="metric-cell">
+          <span class="metric-label">Checks</span>
+          <span class="metric-value">1</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+</body>
+</html>

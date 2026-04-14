@@ -1,0 +1,898 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Microsoft Frontier | Agentic Platform – Shadow Evaluation Detail</title>
+<style>
+  :root {
+    --bg1: #ffffff; --bg2: #fafafa; --bg3: #f0f0f0; --bg4: #e5e7eb;
+    --fg1: #1a1a1a; --fg2: #4b5563; --fg3: #6b7280; --fg4: #9ca3af;
+    --stroke1: #d1d5db; --stroke2: #e5e7eb;
+    --brand: #0f6cbd; --brandBg: #ebf3fc; --brandHover: #115ea3;
+    --green: #0e7a0d; --greenBg: #e6f4e5;
+    --orange: #b35900; --orangeBg: #fff4e0;
+    --red: #c4314b; --redBg: #fde7ec;
+    --teal: #038387; --tealBg: #d6f0f0;
+    --purple: #6b2fa0; --purpleBg: #f0e6fa;
+    --yellow: #c19c00; --yellowBg: #fff9e0;
+    --navy: #1b1464;
+    --shadow4: 0 2px 4px rgba(0,0,0,.06);
+    --shadow8: 0 2px 8px rgba(0,0,0,.08);
+    --shadow16: 0 4px 16px rgba(0,0,0,.1);
+    --radius-xl: 12px; --radius-lg: 8px; --radius-md: 6px; --radius-sm: 4px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background: var(--bg2); color: var(--fg1); line-height: 1.5; }
+  a { color: var(--brand); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+
+  /* Page Layout */
+  .page-header { display: flex; align-items: center; gap: 12px; padding: 20px 32px 16px; background: var(--bg1); border-bottom: 1px solid var(--stroke2); }
+  .page-header-icon { font-size: 22px; color: var(--brand); }
+  .page-header h1 { font-size: 22px; font-weight: 700; }
+  .page-header p { font-size: 13px; color: var(--fg3); margin-top: 2px; }
+  .page-header-actions { margin-left: auto; display: flex; align-items: center; gap: 12px; }
+  .refresh-info { font-size: 12px; color: var(--fg4); }
+  .btn { display: inline-flex; align-items: center; gap: 6px; padding: 6px 14px; border-radius: var(--radius-md); font-size: 13px; font-weight: 600; cursor: pointer; border: 1px solid var(--stroke1); background: var(--bg1); color: var(--fg1); transition: background .12s; }
+  .btn:hover { background: var(--bg3); }
+  .btn-primary { background: var(--brand); color: #fff; border-color: var(--brand); }
+  .btn-primary:hover { background: var(--brandHover); }
+  .btn-teal { background: var(--teal); color: #fff; border-color: var(--teal); }
+  .btn-teal:hover { background: #026d70; }
+  .btn-outline-teal { background: transparent; color: var(--teal); border-color: var(--teal); }
+
+  .page-content { padding: 24px 32px 48px; max-width: 1440px; }
+
+  /* Back link */
+  .back-link { display: inline-flex; align-items: center; gap: 6px; font-size: 14px; color: var(--brand); cursor: pointer; margin-bottom: 20px; background: none; border: none; padding: 0; }
+  .back-link:hover { text-decoration: underline; }
+
+  /* Agent Header */
+  .agent-header { display: flex; align-items: flex-start; gap: 16px; margin-bottom: 24px; }
+  .agent-avatar {
+    width: 48px; height: 48px; border-radius: var(--radius-lg);
+    display: flex; align-items: center; justify-content: center;
+    color: #fff; font-weight: 600; font-size: 16px; flex-shrink: 0;
+  }
+  .agent-header-info { flex: 1; min-width: 0; }
+  .agent-name-row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+  .agent-name { font-size: 22px; font-weight: 700; }
+  .agent-desc { font-size: 14px; color: var(--fg2); margin-top: 4px; }
+  .agent-owner { font-size: 12px; color: var(--fg4); margin-top: 2px; }
+  .tag { display: inline-flex; align-items: center; gap: 4px; font-size: 11px; font-weight: 600; padding: 2px 10px; border-radius: var(--radius-sm); white-space: nowrap; }
+
+  /* Date picker row */
+  .date-row { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; }
+  .date-picker { display: flex; align-items: center; gap: 8px; padding: 6px 14px; border: 1px solid var(--stroke1); border-radius: var(--radius-md); font-size: 13px; background: var(--bg1); min-width: 180px; }
+  .date-label { font-size: 13px; color: var(--fg3); }
+
+  /* Tabs */
+  .tabs { display: flex; gap: 0; border-bottom: 1px solid var(--stroke2); margin-bottom: 24px; }
+  .tab-panel { display: none; }
+  .tab-panel.active { display: block; }
+  .tab { font-size: 14px; font-weight: 600; padding: 10px 20px; border: none; background: none; cursor: pointer; color: var(--fg3); border-bottom: 2px solid transparent; transition: color .12s; }
+  .tab:hover { color: var(--fg1); }
+  .tab.active { color: var(--brand); border-bottom-color: var(--brand); }
+  .tab .count { display: inline-flex; align-items: center; justify-content: center; min-width: 20px; height: 20px; border-radius: 10px; background: var(--bg3); color: var(--fg3); font-size: 11px; font-weight: 700; padding: 0 6px; margin-left: 6px; }
+
+  /* Score Cards */
+  .score-cards { background: var(--bg1); border: 1px solid var(--stroke2); border-radius: var(--radius-xl); box-shadow: var(--shadow8); overflow: hidden; margin-bottom: 20px; }
+  .score-cards-row { display: grid; grid-template-columns: repeat(5, 1fr); }
+  .score-card { padding: 20px 24px; }
+  .score-card:not(:first-child) { border-left: 1px solid var(--stroke2); }
+  .score-card-header { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+  .score-card-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+  .score-card-label { font-size: 12px; font-weight: 600; color: var(--fg3); }
+  .score-card-value { font-size: 30px; font-weight: 600; line-height: 1.08; margin-bottom: 6px; }
+  .score-card-delta { font-size: 12px; font-weight: 600; display: inline-flex; align-items: center; gap: 3px; margin-bottom: 8px; }
+  .delta-pos { color: var(--green); }
+  .delta-neg { color: var(--red); }
+  .delta-neutral { color: var(--fg4); }
+  .score-card-desc { font-size: 12px; color: var(--fg3); margin-bottom: 2px; }
+  .score-card-sub { font-size: 11px; color: var(--fg4); }
+  .score-cards-footer { display: flex; align-items: center; gap: 24px; padding: 10px 24px; border-top: 1px solid var(--stroke2); background: var(--bg3); font-size: 12px; color: var(--fg3); }
+  .legend-item { display: flex; align-items: center; gap: 6px; }
+  .legend-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+
+  /* KPI Row */
+  .kpi-row { display: flex; flex-wrap: wrap; gap: 16px; margin-bottom: 20px; }
+  .kpi-card { background: var(--bg1); border: 1px solid var(--stroke2); border-radius: var(--radius-xl); box-shadow: var(--shadow4); padding: 20px 24px; flex: 1 1 0; min-width: 180px; display: flex; flex-direction: column; gap: 3px; }
+  .kpi-title { font-size: 12px; font-weight: 600; color: var(--brand); }
+  .kpi-value { font-size: 30px; font-weight: 600; color: var(--fg1); line-height: 1.08; }
+  .kpi-delta { font-size: 12px; font-weight: 600; display: inline-flex; align-items: center; gap: 3px; }
+
+  /* Chart Row */
+  .chart-row { display: grid; gap: 16px; margin-bottom: 20px; }
+  .chart-row-2 { grid-template-columns: repeat(2, 1fr); }
+  .chart-row-3 { grid-template-columns: repeat(3, 1fr); }
+  .chart-card { background: var(--bg1); border: 1px solid var(--stroke2); border-radius: var(--radius-xl); box-shadow: var(--shadow4); padding: 20px 24px; }
+  .chart-title { font-size: 14px; font-weight: 600; margin-bottom: 12px; }
+  .chart-area { width: 100%; height: 160px; border-radius: var(--radius-lg); background: var(--bg2); border: 1px solid var(--stroke2); overflow: hidden; }
+  .chart-svg { width: 100%; height: 100%; }
+  .chart-legend { display: flex; gap: 16px; margin-top: 8px; font-size: 11px; color: var(--fg3); flex-wrap: wrap; }
+
+  /* Scorecard Table */
+  .scorecard-section { background: var(--bg1); border: 1px solid var(--stroke2); border-radius: var(--radius-xl); box-shadow: var(--shadow8); overflow: hidden; margin-bottom: 20px; }
+  .scorecard-header { display: flex; align-items: center; gap: 8px; padding: 14px 24px; border-bottom: 1px solid var(--stroke2); }
+  .scorecard-title { font-size: 16px; font-weight: 600; }
+  .scorecard-icon { font-size: 18px; color: var(--fg2); }
+  .scorecard-toggle { margin-left: auto; display: flex; align-items: center; gap: 16px; font-size: 13px; }
+  .scorecard-toggle label { display: flex; align-items: center; gap: 6px; cursor: pointer; color: var(--fg3); }
+  .scorecard-toggle input[type="radio"] { accent-color: var(--brand); }
+  .scorecard-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  .scorecard-table th {
+    padding: 10px 20px; font-weight: 700; font-size: 11px; letter-spacing: .04em;
+    color: var(--fg3); text-align: left; border: 1px solid var(--stroke2);
+    background: var(--bg3); white-space: nowrap; text-transform: uppercase;
+  }
+  .scorecard-table td {
+    padding: 10px 20px; border: 1px solid var(--stroke2); vertical-align: top;
+    color: var(--fg1); line-height: 1.4;
+  }
+  .td-category { font-weight: 600; background: var(--bg3); }
+  .td-metric { color: var(--brand); font-weight: 500; }
+  .td-definition { color: var(--fg3); font-size: 12px; }
+  .td-value { text-align: right; font-weight: 600; }
+  .td-missing { color: var(--fg4); font-style: italic; font-weight: 400; }
+  .td-center { text-align: center; }
+  .score-badge { display: inline-block; padding: 2px 8px; border-radius: var(--radius-sm); font-size: 12px; font-weight: 600; min-width: 2.5rem; text-align: center; }
+  .badge-pass { background: var(--greenBg); color: var(--green); }
+  .badge-fail { background: var(--redBg); color: var(--red); }
+  .badge-warn { background: var(--yellowBg); color: var(--yellow); }
+  .badge-neutral { background: var(--bg3); color: var(--fg3); }
+
+  /* Case Section (Data Grid) */
+  .case-section { background: var(--bg1); border: 1px solid var(--stroke2); border-radius: var(--radius-xl); box-shadow: var(--shadow8); overflow: hidden; margin-bottom: 20px; }
+  .case-title { padding: 14px 24px; font-size: 14px; font-weight: 600; border-bottom: 1px solid var(--stroke2); display: flex; align-items: center; gap: 8px; }
+  .case-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  .case-table th { padding: 10px 16px; font-weight: 700; font-size: 12px; color: var(--fg3); text-align: left; background: var(--bg3); border-bottom: 1px solid var(--stroke2); }
+  .case-table td { padding: 10px 16px; border-bottom: 1px solid var(--stroke2); }
+  .case-table tr:hover td { background: var(--bg2); }
+  .case-pagination { display: flex; align-items: center; justify-content: center; gap: 12px; padding: 12px 24px; border-top: 1px solid var(--stroke2); font-size: 12px; color: var(--fg3); }
+
+  /* Low Score Section */
+  .low-score-section { background: var(--bg1); border: 1px solid var(--stroke2); border-radius: var(--radius-xl); box-shadow: var(--shadow8); overflow: hidden; margin-bottom: 20px; }
+  .low-score-header { display: flex; align-items: center; gap: 8px; padding: 14px 24px; border-bottom: 1px solid var(--stroke2); }
+  .low-score-title { font-size: 16px; font-weight: 600; }
+  .low-score-body { padding: 12px 24px; max-height: 400px; overflow-y: auto; }
+  .low-score-group { border: 1px solid var(--stroke1); border-radius: var(--radius-md); margin-bottom: 8px; overflow: hidden; }
+  .low-score-toggle { display: flex; align-items: center; gap: 8px; width: 100%; padding: 10px 14px; background: var(--bg3); border: none; cursor: pointer; text-align: left; font: inherit; font-size: 13px; font-weight: 500; }
+  .low-score-toggle:hover { background: #e0e0e0; }
+  .low-score-chevron { font-size: 12px; color: var(--fg4); transition: transform .15s; }
+  .low-score-metric { flex: 1; }
+  .low-score-badge { font-size: 12px; color: var(--fg4); }
+  .low-score-avg { font-size: 13px; font-weight: 600; color: var(--red); }
+  .low-score-content { padding: 10px 14px; border-top: 1px solid var(--stroke1); background: var(--bg1); font-size: 13px; color: var(--fg3); }
+
+  /* Shadow Banner */
+  .shadow-banner {
+    background: linear-gradient(135deg, var(--tealBg) 0%, #e8f6f6 100%);
+    border: 1px solid var(--teal); border-radius: var(--radius-xl);
+    padding: 14px 20px; margin-bottom: 20px; display: flex;
+    align-items: flex-start; gap: 12px;
+  }
+  .shadow-banner-icon { font-size: 20px; flex-shrink: 0; }
+  .shadow-banner h3 { font-size: 13px; font-weight: 600; color: var(--teal); margin-bottom: 3px; }
+  .shadow-banner p { font-size: 12px; color: var(--fg3); line-height: 1.5; }
+
+  /* Promotion Readiness */
+  .promotion-section { background: var(--bg1); border: 1px solid var(--stroke2); border-radius: var(--radius-xl); box-shadow: var(--shadow8); overflow: hidden; margin-bottom: 20px; }
+  .promotion-header { padding: 14px 24px; border-bottom: 1px solid var(--stroke2); display: flex; align-items: center; gap: 8px; }
+  .promotion-title { font-size: 16px; font-weight: 600; }
+  .promotion-body { padding: 16px 24px; }
+  .promotion-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; }
+  .promo-row { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid var(--bg4); font-size: 13px; }
+  .promo-label { color: var(--fg3); }
+  .promo-value { font-weight: 600; display: flex; align-items: center; gap: 6px; }
+  .promo-dot { width: 6px; height: 6px; border-radius: 50%; }
+  .promo-result { padding: 12px 0; margin-top: 8px; border-top: 2px solid; font-size: 15px; font-weight: 700; display: flex; justify-content: space-between; align-items: center; }
+
+  /* Pie mini */
+  .pie-mini { display: flex; align-items: center; gap: 16px; }
+  .pie-legend-list { display: flex; flex-direction: column; gap: 4px; font-size: 12px; }
+  .pie-legend-item { display: flex; align-items: center; gap: 6px; }
+  .pie-swatch { width: 10px; height: 10px; border-radius: 2px; flex-shrink: 0; }
+
+  /* Flow diagram */
+  .flow-diagram { background: var(--bg1); border: 1px solid var(--stroke2); border-radius: var(--radius-xl); box-shadow: var(--shadow4); padding: 20px 24px; margin-bottom: 20px; }
+  .flow-diagram h4 { font-size: 14px; font-weight: 600; margin-bottom: 16px; }
+  .flow-row { display: flex; align-items: center; gap: 0; margin-bottom: 12px; }
+  .flow-node { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 10px 16px; border: 2px solid var(--navy); border-radius: var(--radius-lg); min-width: 110px; text-align: center; background: var(--bg1); }
+  .flow-node-label { font-size: 11px; font-weight: 600; }
+  .flow-node-value { font-size: 20px; font-weight: 700; color: var(--navy); }
+  .flow-arrow { padding: 0 6px; color: var(--navy); font-size: 13px; }
+  .flow-sub { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 6px 12px; border: 1px solid var(--stroke1); border-radius: var(--radius-md); min-width: 90px; text-align: center; font-size: 11px; }
+  .flow-sub-label { font-weight: 600; color: var(--fg3); font-size: 10px; }
+  .flow-sub-value { font-size: 15px; font-weight: 700; }
+
+  /* Responsive */
+  @media (max-width: 1100px) {
+    .score-cards-row { grid-template-columns: repeat(3, 1fr); }
+    .chart-row-3 { grid-template-columns: 1fr; }
+    .chart-row-2 { grid-template-columns: 1fr; }
+    .promotion-grid { grid-template-columns: 1fr; }
+  }
+  @media (max-width: 768px) {
+    .page-content { padding: 16px; }
+    .score-cards-row { grid-template-columns: 1fr 1fr; }
+    .kpi-row { flex-direction: column; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ==================== PAGE HEADER ==================== -->
+<div class="page-header">
+  <span class="page-header-icon">📊</span>
+  <div>
+    <h1>Evaluations</h1>
+    <p>Is my agent effective — and how do I make it better?</p>
+  </div>
+  <div class="page-header-actions">
+    <span class="refresh-info">Last refreshed: Apr 14, 2026, 12:36 PM</span>
+    <button class="btn">🔄 Refresh now</button>
+  </div>
+</div>
+
+<div class="page-content">
+
+  <!-- Back Link -->
+  <button class="back-link">← Back to all agents</button>
+
+  <!-- ==================== AGENT HEADER ==================== -->
+  <div class="agent-header">
+    <div class="agent-avatar" style="background:var(--brand)">BA</div>
+    <div class="agent-header-info">
+      <div class="agent-name-row">
+        <h2 class="agent-name">BizApps Agent</h2>
+        <span class="tag" style="background:var(--tealBg);color:var(--teal)">🔍 Shadow</span>
+        <span class="tag" style="background:var(--greenBg);color:var(--green)">✓ Compliant</span>
+      </div>
+      <p class="agent-desc">BizApps Solution Agent processing support cases via Shim pipeline — Licensing, Throttling, and Approvals scenarios. Shadow mode: outputs logged, never delivered to users.</p>
+      <p class="agent-owner">BizApps Solution Agents · Owner: Support Engineering · Date range: Nov 2025 – Mar 2026</p>
+    </div>
+  </div>
+
+  <!-- Date Range -->
+  <div class="date-row">
+    <span class="date-label">📅</span>
+    <div class="date-picker">
+      <span style="font-size:14px">📅</span>
+      <span>Nov 11, 2025</span>
+      <span style="color:var(--fg4)">→</span>
+      <span>Mar 26, 2026</span>
+    </div>
+    <span class="date-label" style="color:var(--fg4)">~4.5 months of shadow observation</span>
+  </div>
+
+  <!-- Tabs -->
+  <div class="tabs" id="tabBar">
+    <button class="tab active" data-tab="shadow-metrics">Shadow Metrics</button>
+    <button class="tab" data-tab="trigger-flow">Agent Trigger Flow</button>
+    <button class="tab" data-tab="case-details">Case Details <span class="count">1,405</span></button>
+    <button class="tab" data-tab="promotion">Promotion Readiness</button>
+  </div>
+
+  <!-- ==================== TAB: SHADOW METRICS ==================== -->
+  <div class="tab-panel active" id="tab-shadow-metrics">
+  <div class="shadow-banner">
+    <span class="shadow-banner-icon">🔍</span>
+    <div>
+      <h3>Shadow agent — observe only</h3>
+      <p>This agent processed <strong>2,018 cases</strong> via the Shim → BizAppsSolution pipeline. Of those, <strong>1,405 were AI-qualified</strong>. Shadow outputs are compared against production baselines but are never shown to end users.</p>
+    </div>
+  </div>
+
+  <!-- ==================== SCORE CARDS (AI Response Classification) ==================== -->
+  <div class="score-cards">
+    <div class="score-cards-row">
+      <div class="score-card">
+        <div class="score-card-header">
+          <span class="score-card-dot" style="background:var(--teal)"></span>
+          <span class="score-card-label">AI Qualified Cases</span>
+        </div>
+        <div class="score-card-value" style="color:var(--teal)">1,405</div>
+        <div class="score-card-delta delta-neutral">— Baseline period</div>
+        <div class="score-card-desc">Total cases processed by shadow</div>
+        <div class="score-card-sub">From Shim pipeline (2,018 routed)</div>
+      </div>
+      <div class="score-card">
+        <div class="score-card-header">
+          <span class="score-card-dot" style="background:var(--green)"></span>
+          <span class="score-card-label">AI Offered Solution</span>
+        </div>
+        <div class="score-card-value" style="color:var(--green)">16.9%</div>
+        <div class="score-card-delta delta-pos">▲ 2.3% vs previous period</div>
+        <div class="score-card-desc">237 cases — shadow offered answer</div>
+        <div class="score-card-sub">Target: ≥ 25%</div>
+      </div>
+      <div class="score-card">
+        <div class="score-card-header">
+          <span class="score-card-dot" style="background:var(--brand)"></span>
+          <span class="score-card-label">AI Requested More Info</span>
+        </div>
+        <div class="score-card-value" style="color:var(--brand)">51.2%</div>
+        <div class="score-card-delta delta-neg">▼ 1.8% vs previous period</div>
+        <div class="score-card-desc">719 cases — needed more context</div>
+        <div class="score-card-sub">Goal: reduce over time</div>
+      </div>
+      <div class="score-card">
+        <div class="score-card-header">
+          <span class="score-card-dot" style="background:var(--red)"></span>
+          <span class="score-card-label">AI Not Compatible</span>
+        </div>
+        <div class="score-card-value" style="color:var(--red)">23.6%</div>
+        <div class="score-card-delta delta-neg">▲ 0.5% vs previous period</div>
+        <div class="score-card-desc">331 cases — outside agent scope</div>
+        <div class="score-card-sub">Target: ≤ 15%</div>
+      </div>
+      <div class="score-card">
+        <div class="score-card-header">
+          <span class="score-card-dot" style="background:var(--fg4)"></span>
+          <span class="score-card-label">No Response</span>
+        </div>
+        <div class="score-card-value" style="color:var(--fg4)">8.4%</div>
+        <div class="score-card-delta delta-neutral">— 118 cases</div>
+        <div class="score-card-desc">No AI output generated</div>
+        <div class="score-card-sub">Investigate for failures</div>
+      </div>
+    </div>
+    <div class="score-cards-footer">
+      <span class="legend-item"><span class="legend-dot" style="background:var(--green)"></span>16.9% Offered Solution</span>
+      <span class="legend-item"><span class="legend-dot" style="background:var(--brand)"></span>51.2% Requested More Info</span>
+      <span class="legend-item"><span class="legend-dot" style="background:var(--red)"></span>23.6% Not Compatible</span>
+      <span class="legend-item"><span class="legend-dot" style="background:var(--fg4)"></span>8.4% No Response</span>
+    </div>
+  </div>
+
+  <!-- ==================== KPI ROW 1: Case Performance ==================== -->
+  <div class="kpi-row">
+    <div class="kpi-card">
+      <span class="kpi-title">Case Volume</span>
+      <span class="kpi-value">1,405</span>
+      <span class="kpi-delta delta-pos">▲ 12.1% vs previous</span>
+    </div>
+    <div class="kpi-card">
+      <span class="kpi-title">Avg Case Age</span>
+      <span class="kpi-value">38.6 days</span>
+      <span class="kpi-delta delta-neg">▲ 2.4% vs previous</span>
+    </div>
+    <div class="kpi-card">
+      <span class="kpi-title">Resolution Rate (DFM)</span>
+      <span class="kpi-value">65.8%</span>
+      <span class="kpi-delta delta-pos">▲ 3.2% vs previous</span>
+    </div>
+  </div>
+
+  <!-- ==================== KPI ROW 2: Agent Routing ==================== -->
+  <div class="kpi-row">
+    <div class="kpi-card">
+      <span class="kpi-title">Shim Pipeline Entries</span>
+      <span class="kpi-value">2,018</span>
+      <span class="kpi-delta delta-neutral">— Total routed</span>
+    </div>
+    <div class="kpi-card">
+      <span class="kpi-title">Licensing Cases</span>
+      <span class="kpi-value">511</span>
+      <span class="kpi-delta delta-neutral">25.3% of total</span>
+    </div>
+    <div class="kpi-card">
+      <span class="kpi-title">Throttling Cases</span>
+      <span class="kpi-value">1,238</span>
+      <span class="kpi-delta delta-neutral">61.3% of total</span>
+    </div>
+    <div class="kpi-card">
+      <span class="kpi-title">Approvals Cases</span>
+      <span class="kpi-value">269</span>
+      <span class="kpi-delta delta-neutral">13.3% of total</span>
+    </div>
+  </div>
+
+  <!-- ==================== CHART ROW 1: Quality & Status ==================== -->
+  <div class="chart-row chart-row-3">
+    <!-- AI Response Classification Pie -->
+    <div class="chart-card">
+      <div class="chart-title">Case Status — BizApps Agent</div>
+      <div class="pie-mini">
+        <svg viewBox="0 0 180 180" width="140" height="140">
+          <circle cx="90" cy="90" r="70" fill="none" stroke="var(--brand)" stroke-width="35"
+            stroke-dasharray="225.2 213.6" stroke-dashoffset="0" transform="rotate(-90 90 90)"/>
+          <circle cx="90" cy="90" r="70" fill="none" stroke="var(--navy)" stroke-width="35"
+            stroke-dasharray="103.7 335.2" stroke-dashoffset="-225.2" transform="rotate(-90 90 90)"/>
+          <circle cx="90" cy="90" r="70" fill="none" stroke="var(--orange)" stroke-width="35"
+            stroke-dasharray="74.2 364.6" stroke-dashoffset="-328.9" transform="rotate(-90 90 90)"/>
+          <circle cx="90" cy="90" r="70" fill="none" stroke="var(--purple)" stroke-width="35"
+            stroke-dasharray="36.9 401.9" stroke-dashoffset="-403.1" transform="rotate(-90 90 90)"/>
+          <text x="90" y="86" text-anchor="middle" font-size="18" font-weight="700" fill="var(--fg1)">1,405</text>
+          <text x="90" y="102" text-anchor="middle" font-size="10" fill="var(--fg3)">Total</text>
+        </svg>
+        <div class="pie-legend-list">
+          <div class="pie-legend-item"><span class="pie-swatch" style="background:var(--brand)"></span>Requested More Info — 719</div>
+          <div class="pie-legend-item"><span class="pie-swatch" style="background:var(--navy)"></span>Not Compatible — 331</div>
+          <div class="pie-legend-item"><span class="pie-swatch" style="background:var(--orange)"></span>Offered Solution — 237</div>
+          <div class="pie-legend-item"><span class="pie-swatch" style="background:var(--purple)"></span>No Response — 118</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Case Status in DFM -->
+    <div class="chart-card">
+      <div class="chart-title">Case Status in DFM</div>
+      <div class="pie-mini">
+        <svg viewBox="0 0 180 180" width="140" height="140">
+          <circle cx="90" cy="90" r="70" fill="none" stroke="var(--brand)" stroke-width="35"
+            stroke-dasharray="286.1 152.8" stroke-dashoffset="0" transform="rotate(-90 90 90)"/>
+          <circle cx="90" cy="90" r="70" fill="none" stroke="var(--yellow)" stroke-width="35"
+            stroke-dasharray="35.9 402.9" stroke-dashoffset="-286.1" transform="rotate(-90 90 90)"/>
+          <circle cx="90" cy="90" r="70" fill="none" stroke="var(--orange)" stroke-width="35"
+            stroke-dasharray="27.3 411.6" stroke-dashoffset="-322.0" transform="rotate(-90 90 90)"/>
+          <circle cx="90" cy="90" r="70" fill="none" stroke="var(--navy)" stroke-width="35"
+            stroke-dasharray="25.4 413.5" stroke-dashoffset="-349.3" transform="rotate(-90 90 90)"/>
+          <circle cx="90" cy="90" r="70" fill="none" stroke="var(--fg4)" stroke-width="35"
+            stroke-dasharray="64.2 374.6" stroke-dashoffset="-374.7" transform="rotate(-90 90 90)"/>
+          <text x="90" y="86" text-anchor="middle" font-size="18" font-weight="700" fill="var(--fg1)">924</text>
+          <text x="90" y="102" text-anchor="middle" font-size="10" fill="var(--fg3)">Resolved</text>
+        </svg>
+        <div class="pie-legend-list">
+          <div class="pie-legend-item"><span class="pie-swatch" style="background:var(--brand)"></span>Resolved — 924</div>
+          <div class="pie-legend-item"><span class="pie-swatch" style="background:var(--yellow)"></span>Troubleshooting — 116</div>
+          <div class="pie-legend-item"><span class="pie-swatch" style="background:var(--orange)"></span>Un-resolved — 88</div>
+          <div class="pie-legend-item"><span class="pie-swatch" style="background:var(--navy)"></span>Disconnect/Hang — 82</div>
+          <div class="pie-legend-item"><span class="pie-swatch" style="background:var(--fg4)"></span>Other — 195</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Scenarios -->
+    <div class="chart-card">
+      <div class="chart-title">Scenarios</div>
+      <div class="pie-mini">
+        <svg viewBox="0 0 180 180" width="140" height="140">
+          <circle cx="90" cy="90" r="70" fill="none" stroke="var(--brand)" stroke-width="35"
+            stroke-dasharray="240.0 198.8" stroke-dashoffset="0" transform="rotate(-90 90 90)"/>
+          <circle cx="90" cy="90" r="70" fill="none" stroke="var(--orange)" stroke-width="35"
+            stroke-dasharray="96.0 342.8" stroke-dashoffset="-240.0" transform="rotate(-90 90 90)"/>
+          <circle cx="90" cy="90" r="70" fill="none" stroke="var(--purple)" stroke-width="35"
+            stroke-dasharray="67.5 371.4" stroke-dashoffset="-336.0" transform="rotate(-90 90 90)"/>
+          <circle cx="90" cy="90" r="70" fill="none" stroke="var(--yellow)" stroke-width="35"
+            stroke-dasharray="35.3 403.6" stroke-dashoffset="-403.5" transform="rotate(-90 90 90)"/>
+          <text x="90" y="86" text-anchor="middle" font-size="14" font-weight="700" fill="var(--fg1)">1,505</text>
+          <text x="90" y="102" text-anchor="middle" font-size="10" fill="var(--fg3)">Total</text>
+        </svg>
+        <div class="pie-legend-list">
+          <div class="pie-legend-item"><span class="pie-swatch" style="background:var(--brand)"></span>BizApps Agent — 836</div>
+          <div class="pie-legend-item"><span class="pie-swatch" style="background:var(--orange)"></span>Flow Perf Agent — 334</div>
+          <div class="pie-legend-item"><span class="pie-swatch" style="background:var(--purple)"></span>Licensing Agent — 235</div>
+          <div class="pie-legend-item"><span class="pie-swatch" style="background:var(--yellow)"></span>Approvals Agent — 100</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== CHART ROW 2: Trend Lines ==================== -->
+  <div class="chart-row chart-row-2">
+    <!-- Agent Level Request Rate -->
+    <div class="chart-card">
+      <div class="chart-title">Agent Level Request Rate</div>
+      <div class="chart-area">
+        <svg class="chart-svg" viewBox="0 0 600 160" preserveAspectRatio="none">
+          <line x1="40" y1="20" x2="580" y2="20" stroke="#e5e7eb" stroke-width="1" stroke-dasharray="4,3"/>
+          <line x1="40" y1="50" x2="580" y2="50" stroke="#e5e7eb" stroke-width="1" stroke-dasharray="4,3"/>
+          <line x1="40" y1="80" x2="580" y2="80" stroke="#e5e7eb" stroke-width="1" stroke-dasharray="4,3"/>
+          <line x1="40" y1="110" x2="580" y2="110" stroke="#e5e7eb" stroke-width="1" stroke-dasharray="4,3"/>
+          <line x1="40" y1="140" x2="580" y2="140" stroke="#e5e7eb" stroke-width="1"/>
+          <text x="35" y="24" text-anchor="end" font-size="9" fill="#9ca3af">300</text>
+          <text x="35" y="54" text-anchor="end" font-size="9" fill="#9ca3af">200</text>
+          <text x="35" y="84" text-anchor="end" font-size="9" fill="#9ca3af">100</text>
+          <text x="35" y="114" text-anchor="end" font-size="9" fill="#9ca3af">50</text>
+          <text x="35" y="144" text-anchor="end" font-size="9" fill="#9ca3af">0</text>
+          <text x="130" y="156" text-anchor="middle" font-size="9" fill="#9ca3af">Dec '25</text>
+          <text x="270" y="156" text-anchor="middle" font-size="9" fill="#9ca3af">Jan '26</text>
+          <text x="400" y="156" text-anchor="middle" font-size="9" fill="#9ca3af">Feb '26</text>
+          <text x="530" y="156" text-anchor="middle" font-size="9" fill="#9ca3af">Mar '26</text>
+          <!-- Case Tool (blue) with spike -->
+          <polyline points="60,138 80,135 100,20 120,133 140,138 180,136 220,138 260,136 300,138 340,136 380,138 420,136 460,138 500,136 540,138 570,136" fill="none" stroke="var(--brand)" stroke-width="2"/>
+          <!-- Licensing Agent (red) spike then flat -->
+          <polyline points="60,138 80,130 100,55 120,135 140,138 180,137 220,138 260,137 300,138 340,137 380,138 420,137 460,138 500,137 540,138 570,137" fill="none" stroke="var(--red)" stroke-width="1.5"/>
+          <!-- Kusto (orange) low flat -->
+          <polyline points="60,139 100,138 140,139 180,138 220,139 260,138 300,139 340,138 380,139 420,138 460,139 500,138 540,139 570,138" fill="none" stroke="var(--orange)" stroke-width="1.5"/>
+        </svg>
+      </div>
+      <div class="chart-legend">
+        <span class="legend-item"><span class="legend-dot" style="background:var(--brand)"></span>Case Tool</span>
+        <span class="legend-item"><span class="legend-dot" style="background:var(--red)"></span>Licensing Agent</span>
+        <span class="legend-item"><span class="legend-dot" style="background:var(--orange)"></span>Kusto Troubleshooting</span>
+      </div>
+    </div>
+
+    <!-- AI Solution Rate Trend -->
+    <div class="chart-card">
+      <div class="chart-title">AI Solution Rate Trend (%)</div>
+      <div class="chart-area">
+        <svg class="chart-svg" viewBox="0 0 600 160" preserveAspectRatio="none">
+          <line x1="40" y1="20" x2="580" y2="20" stroke="#e5e7eb" stroke-width="1" stroke-dasharray="4,3"/>
+          <line x1="40" y1="60" x2="580" y2="60" stroke="#e5e7eb" stroke-width="1" stroke-dasharray="4,3"/>
+          <line x1="40" y1="100" x2="580" y2="100" stroke="#e5e7eb" stroke-width="1" stroke-dasharray="4,3"/>
+          <line x1="40" y1="140" x2="580" y2="140" stroke="#e5e7eb" stroke-width="1"/>
+          <text x="35" y="24" text-anchor="end" font-size="9" fill="#9ca3af">30%</text>
+          <text x="35" y="64" text-anchor="end" font-size="9" fill="#9ca3af">20%</text>
+          <text x="35" y="104" text-anchor="end" font-size="9" fill="#9ca3af">10%</text>
+          <text x="35" y="144" text-anchor="end" font-size="9" fill="#9ca3af">0%</text>
+          <text x="130" y="156" text-anchor="middle" font-size="9" fill="#9ca3af">Dec '25</text>
+          <text x="270" y="156" text-anchor="middle" font-size="9" fill="#9ca3af">Jan '26</text>
+          <text x="400" y="156" text-anchor="middle" font-size="9" fill="#9ca3af">Feb '26</text>
+          <text x="530" y="156" text-anchor="middle" font-size="9" fill="#9ca3af">Mar '26</text>
+          <!-- 25% target threshold -->
+          <line x1="40" y1="40" x2="580" y2="40" stroke="var(--green)" stroke-width="1.5" stroke-dasharray="8,4" opacity="0.5"/>
+          <text x="585" y="44" font-size="9" fill="var(--green)" font-weight="600">25% target</text>
+          <!-- Solution rate line trending up -->
+          <polyline points="60,120 130,110 200,105 270,95 340,88 400,82 470,78 540,72 570,68" fill="none" stroke="var(--teal)" stroke-width="2.5"/>
+          <polygon points="60,120 130,110 200,105 270,95 340,88 400,82 470,78 540,72 570,68 570,140 60,140" fill="var(--teal)" opacity="0.06"/>
+        </svg>
+      </div>
+      <div class="chart-legend">
+        <span class="legend-item"><span class="legend-dot" style="background:var(--teal)"></span>AI Solution Rate</span>
+        <span class="legend-item"><span class="legend-dot" style="background:var(--green);opacity:.5"></span>Promotion target (25%)</span>
+      </div>
+    </div>
+  </div>
+
+  </div><!-- end tab-shadow-metrics -->
+
+  <!-- ==================== TAB: AGENT TRIGGER FLOW ==================== -->
+  <div class="tab-panel" id="tab-trigger-flow">
+  <!-- ==================== AGENT TRIGGER FLOW ==================== -->
+  <div class="scorecard-section">
+    <div class="scorecard-header">
+      <span class="scorecard-icon">🔀</span>
+      <span class="scorecard-title">Agent Trigger Flow</span>
+      <span style="margin-left:auto;font-size:12px;color:var(--fg4)">Nov 11, 2025 – Mar 26, 2026 · 2,018 total cases</span>
+    </div>
+    <div style="padding:24px;">
+      <!-- Flow Diagram -->
+      <div style="display:flex;align-items:center;gap:0;margin-bottom:32px;overflow-x:auto;">
+        <!-- Entry -->
+        <div style="text-align:center;min-width:120px;">
+          <div style="background:var(--bg2);border:2px solid var(--stroke2);border-radius:12px;padding:16px 12px;">
+            <div style="font-size:22px;margin-bottom:4px;">🔌</div>
+            <div style="font-weight:600;font-size:13px;">Shim</div>
+            <div style="font-size:11px;color:var(--fg4);">Entry Point</div>
+          </div>
+        </div>
+        <!-- Arrow -->
+        <div style="display:flex;align-items:center;padding:0 4px;">
+          <div style="width:40px;height:2px;background:var(--teal);"></div>
+          <div style="width:0;height:0;border-top:6px solid transparent;border-bottom:6px solid transparent;border-left:8px solid var(--teal);"></div>
+        </div>
+        <!-- BizApps Hub -->
+        <div style="text-align:center;min-width:160px;">
+          <div style="background:var(--tealBg);border:2px solid var(--teal);border-radius:12px;padding:16px 12px;">
+            <div style="font-size:22px;margin-bottom:4px;">🤖</div>
+            <div style="font-weight:600;font-size:13px;color:var(--teal);">BizApps Solution Agents</div>
+            <div style="font-size:20px;font-weight:700;color:var(--teal);margin-top:4px;">2,018</div>
+            <div style="font-size:11px;color:var(--fg4);">cases processed</div>
+          </div>
+        </div>
+        <!-- Branching Arrows -->
+        <div style="display:flex;flex-direction:column;gap:8px;padding:0 4px;">
+          <div style="display:flex;align-items:center;">
+            <div style="width:30px;height:2px;background:var(--teal);"></div>
+            <div style="width:0;height:0;border-top:5px solid transparent;border-bottom:5px solid transparent;border-left:7px solid var(--teal);"></div>
+          </div>
+          <div style="display:flex;align-items:center;">
+            <div style="width:30px;height:2px;background:var(--teal);"></div>
+            <div style="width:0;height:0;border-top:5px solid transparent;border-bottom:5px solid transparent;border-left:7px solid var(--teal);"></div>
+          </div>
+          <div style="display:flex;align-items:center;">
+            <div style="width:30px;height:2px;background:var(--teal);"></div>
+            <div style="width:0;height:0;border-top:5px solid transparent;border-bottom:5px solid transparent;border-left:7px solid var(--teal);"></div>
+          </div>
+        </div>
+        <!-- Scenario Nodes -->
+        <div style="display:flex;flex-direction:column;gap:8px;min-width:200px;">
+          <!-- Licensing -->
+          <div style="background:var(--bg2);border:1px solid var(--stroke2);border-radius:10px;padding:10px 14px;display:flex;align-items:center;gap:10px;">
+            <div style="width:8px;height:8px;border-radius:50%;background:#6264A7;flex-shrink:0;"></div>
+            <div style="flex:1;">
+              <div style="font-weight:600;font-size:12px;">Licensing</div>
+              <div style="font-size:11px;color:var(--fg4);">511 cases · 25.3%</div>
+            </div>
+            <div style="font-size:16px;font-weight:700;color:#6264A7;">511</div>
+          </div>
+          <!-- Throttling -->
+          <div style="background:var(--bg2);border:1px solid var(--stroke2);border-radius:10px;padding:10px 14px;display:flex;align-items:center;gap:10px;">
+            <div style="width:8px;height:8px;border-radius:50%;background:#E3008C;flex-shrink:0;"></div>
+            <div style="flex:1;">
+              <div style="font-weight:600;font-size:12px;">Throttling</div>
+              <div style="font-size:11px;color:var(--fg4);">1,238 cases · 61.3%</div>
+            </div>
+            <div style="font-size:16px;font-weight:700;color:#E3008C;">1,238</div>
+          </div>
+          <!-- Approvals -->
+          <div style="background:var(--bg2);border:1px solid var(--stroke2);border-radius:10px;padding:10px 14px;display:flex;align-items:center;gap:10px;">
+            <div style="width:8px;height:8px;border-radius:50%;background:#00B294;flex-shrink:0;"></div>
+            <div style="flex:1;">
+              <div style="font-weight:600;font-size:12px;">Approvals</div>
+              <div style="font-size:11px;color:var(--fg4);">269 cases · 13.3%</div>
+            </div>
+            <div style="font-size:16px;font-weight:700;color:#00B294;">269</div>
+          </div>
+        </div>
+        <!-- Arrow to sub-agents -->
+        <div style="display:flex;flex-direction:column;gap:8px;padding:0 4px;">
+          <div style="display:flex;align-items:center;">
+            <div style="width:30px;height:2px;background:var(--stroke2);"></div>
+            <div style="width:0;height:0;border-top:5px solid transparent;border-bottom:5px solid transparent;border-left:7px solid var(--stroke2);"></div>
+          </div>
+          <div style="display:flex;align-items:center;">
+            <div style="width:30px;height:2px;background:var(--stroke2);"></div>
+            <div style="width:0;height:0;border-top:5px solid transparent;border-bottom:5px solid transparent;border-left:7px solid var(--stroke2);"></div>
+          </div>
+          <div style="display:flex;align-items:center;">
+            <div style="width:30px;height:2px;background:var(--stroke2);"></div>
+            <div style="width:0;height:0;border-top:5px solid transparent;border-bottom:5px solid transparent;border-left:7px solid var(--stroke2);"></div>
+          </div>
+        </div>
+        <!-- Sub-Agent Nodes -->
+        <div style="display:flex;flex-direction:column;gap:8px;min-width:260px;">
+          <!-- Know Me Licensing -->
+          <div style="background:var(--bg2);border:1px solid var(--stroke2);border-radius:10px;padding:10px 14px;">
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;">
+              <div style="font-weight:600;font-size:12px;">Know Me Licensing Agent</div>
+            </div>
+            <div style="display:flex;gap:16px;font-size:11px;color:var(--fg4);">
+              <span>Requests: <strong style="color:var(--fg1);">140</strong></span>
+              <span>Responses: <strong style="color:var(--fg1);">119</strong></span>
+              <span>Rate: <strong style="color:var(--green);">85.0%</strong></span>
+            </div>
+          </div>
+          <!-- Kusto Troubleshooting -->
+          <div style="background:var(--bg2);border:1px solid var(--stroke2);border-radius:10px;padding:10px 14px;">
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;">
+              <div style="font-weight:600;font-size:12px;">Kusto Troubleshooting Agent</div>
+            </div>
+            <div style="display:flex;gap:16px;font-size:11px;color:var(--fg4);">
+              <span>Requests: <strong style="color:var(--fg1);">47</strong></span>
+              <span>Responses: <strong style="color:var(--fg1);">47</strong></span>
+              <span>Rate: <strong style="color:var(--green);">100%</strong></span>
+            </div>
+          </div>
+          <!-- Case Tool -->
+          <div style="background:var(--bg2);border:1px solid var(--stroke2);border-radius:10px;padding:10px 14px;">
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;">
+              <div style="font-weight:600;font-size:12px;">Case Tool</div>
+            </div>
+            <div style="display:flex;gap:16px;font-size:11px;color:var(--fg4);">
+              <span>Requests: <strong style="color:var(--fg1);">387</strong></span>
+              <span>Responses: <strong style="color:var(--fg1);">387</strong></span>
+              <span>Rate: <strong style="color:var(--green);">100%</strong></span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Scenario Breakdown Table -->
+      <div style="margin-top:8px;">
+        <h4 style="font-size:14px;font-weight:600;margin:0 0 12px 0;color:var(--fg1);">Scenario Breakdown</h4>
+        <table class="scorecard-table">
+          <thead>
+            <tr>
+              <th style="width:20%">Scenario</th>
+              <th style="width:12%;text-align:right">Cases</th>
+              <th style="width:12%;text-align:right">% of Total</th>
+              <th style="width:18%">Sub-Agents</th>
+              <th style="width:12%;text-align:right">Requests</th>
+              <th style="width:12%;text-align:right">Responses</th>
+              <th style="width:14%;text-align:right">Response Rate</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="td-metric">Licensing</td>
+              <td class="td-value">511</td>
+              <td class="td-value">25.3%</td>
+              <td class="td-metric">Know Me Licensing Agent</td>
+              <td class="td-value">140</td>
+              <td class="td-value">119</td>
+              <td class="td-value"><span class="score-badge badge-pass">85.0%</span></td>
+            </tr>
+            <tr>
+              <td class="td-metric">Throttling</td>
+              <td class="td-value">1,238</td>
+              <td class="td-value">61.3%</td>
+              <td class="td-metric">Kusto Troubleshooting Agent</td>
+              <td class="td-value">47</td>
+              <td class="td-value">47</td>
+              <td class="td-value"><span class="score-badge badge-pass">100%</span></td>
+            </tr>
+            <tr>
+              <td class="td-metric">Approvals</td>
+              <td class="td-value">269</td>
+              <td class="td-value">13.3%</td>
+              <td class="td-metric">Case Tool</td>
+              <td class="td-value">387</td>
+              <td class="td-value">387</td>
+              <td class="td-value"><span class="score-badge badge-pass">100%</span></td>
+            </tr>
+            <tr style="font-weight:600;background:var(--bg2);">
+              <td class="td-metric">Total</td>
+              <td class="td-value">2,018</td>
+              <td class="td-value">100%</td>
+              <td class="td-metric">All Sub-Agents</td>
+              <td class="td-value">574</td>
+              <td class="td-value">553</td>
+              <td class="td-value"><span class="score-badge badge-pass">96.3%</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Inbound Email Agent -->
+      <div style="margin-top:24px;padding:16px;background:var(--bg2);border:1px solid var(--stroke2);border-radius:10px;">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">
+          <span style="font-size:16px;">📧</span>
+          <h4 style="font-size:14px;font-weight:600;margin:0;color:var(--fg1);">Inbound Email Agent</h4>
+          <span class="tag" style="background:var(--tealBg);color:var(--teal);font-size:11px;">Entry Point</span>
+        </div>
+        <p style="font-size:13px;color:var(--fg3);margin:0 0 12px 0;">Processes incoming support emails and routes to BizApps Solution Agents pipeline</p>
+        <div style="display:flex;gap:24px;font-size:13px;">
+          <div><span style="color:var(--fg4);">Total Processed:</span> <strong>2,018</strong></div>
+          <div><span style="color:var(--fg4);">→ Licensing:</span> <strong>511</strong> (25.3%)</div>
+          <div><span style="color:var(--fg4);">→ Throttling:</span> <strong>1,238</strong> (61.3%)</div>
+          <div><span style="color:var(--fg4);">→ Approvals:</span> <strong>269</strong> (13.3%)</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  </div><!-- end tab-trigger-flow -->
+
+  <!-- ==================== TAB: CASE DETAILS ==================== -->
+  <div class="tab-panel" id="tab-case-details">
+  <!-- ==================== CASE DETAILS (DataGrid) ==================== -->
+  <div class="case-section">
+    <div class="case-title">
+      <span>📋</span> Case-Level Detail
+      <span style="margin-left:auto;font-size:12px;color:var(--fg4);font-weight:400">Showing 1–10 of 1,405</span>
+    </div>
+    <table class="case-table">
+      <thead>
+        <tr>
+          <th>Case Number</th>
+          <th>BizApps Agent</th>
+          <th>Support Area Path</th>
+          <th>Status</th>
+          <th>AI Response</th>
+          <th>Case Age (d)</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td style="font-family:monospace;font-size:12px">2603260030007189</td>
+          <td>BizApps Flow Perf Agent</td>
+          <td>Azure/Billing/Assistance…</td>
+          <td><span class="score-badge badge-pass">Resolved</span></td>
+          <td><span class="tag" style="background:var(--greenBg);color:var(--green)">Offered Solution</span></td>
+          <td>12.3</td>
+        </tr>
+        <tr>
+          <td style="font-family:monospace;font-size:12px">2603260030001182</td>
+          <td>BizApps Flow Perf Agent</td>
+          <td>Azure/Blob Storage/Conn…</td>
+          <td><span class="score-badge badge-pass">Resolved</span></td>
+          <td><span class="tag" style="background:var(--brandBg);color:var(--brand)">Requested Info</span></td>
+          <td>24.1</td>
+        </tr>
+        <tr>
+          <td style="font-family:monospace;font-size:12px">2603260010013906</td>
+          <td>BizApps Licensing Agent</td>
+          <td>Azure/Billing/Marketplace…</td>
+          <td><span class="score-badge badge-warn">Troubleshooting</span></td>
+          <td><span class="tag" style="background:var(--redBg);color:var(--red)">Not Compatible</span></td>
+          <td>45.8</td>
+        </tr>
+        <tr>
+          <td style="font-family:monospace;font-size:12px">2603260010011144</td>
+          <td>BizApps Flow Perf Agent</td>
+          <td>Azure/Blob Storage/Firewall…</td>
+          <td><span class="score-badge badge-pass">Resolved</span></td>
+          <td><span class="tag" style="background:var(--greenBg);color:var(--green)">Offered Solution</span></td>
+          <td>8.7</td>
+        </tr>
+        <tr>
+          <td style="font-family:monospace;font-size:12px">2603250030002527</td>
+          <td>BizApps Approvals Agent</td>
+          <td>Azure/Billing/Assistance…</td>
+          <td><span class="score-badge badge-fail">Un-resolved</span></td>
+          <td><span class="tag" style="background:var(--brandBg);color:var(--brand)">Requested Info</span></td>
+          <td>62.4</td>
+        </tr>
+        <tr>
+          <td style="font-family:monospace;font-size:12px">2603250010005279</td>
+          <td>BizApps Flow Perf Agent</td>
+          <td>Azure/Blob Storage/Conn…</td>
+          <td><span class="score-badge badge-pass">Resolved</span></td>
+          <td><span class="tag" style="background:var(--brandBg);color:var(--brand)">Requested Info</span></td>
+          <td>31.2</td>
+        </tr>
+        <tr>
+          <td style="font-family:monospace;font-size:12px">2603240030004416</td>
+          <td>BizApps Approvals Agent</td>
+          <td>Azure/Billing/Marketplace…</td>
+          <td><span class="score-badge badge-pass">Resolved</span></td>
+          <td><span class="tag" style="background:var(--greenBg);color:var(--green)">Offered Solution</span></td>
+          <td>19.5</td>
+        </tr>
+        <tr>
+          <td style="font-family:monospace;font-size:12px">2504030030003544</td>
+          <td>BizApps Agent</td>
+          <td>Azure/Billing/Assistance…</td>
+          <td><span class="score-badge badge-warn">Pending</span></td>
+          <td><span class="tag" style="background:var(--bg3);color:var(--fg3)">No Response</span></td>
+          <td>55.1</td>
+        </tr>
+        <tr>
+          <td style="font-family:monospace;font-size:12px">2504140050003003</td>
+          <td>BizApps Licensing Agent</td>
+          <td>Azure/Billing/Marketplace…</td>
+          <td><span class="score-badge badge-pass">Resolved</span></td>
+          <td><span class="tag" style="background:var(--brandBg);color:var(--brand)">Requested Info</span></td>
+          <td>28.9</td>
+        </tr>
+        <tr>
+          <td style="font-family:monospace;font-size:12px">2508010030006124</td>
+          <td>BizApps Agent</td>
+          <td>Azure/Blob Storage/Firewall…</td>
+          <td><span class="score-badge badge-pass">Resolved</span></td>
+          <td><span class="tag" style="background:var(--redBg);color:var(--red)">Not Compatible</span></td>
+          <td>42.0</td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="case-pagination">
+      <button class="btn" style="padding:4px 10px;font-size:12px">← Previous</button>
+      <span>Page 1 of 141</span>
+      <button class="btn" style="padding:4px 10px;font-size:12px">Next →</button>
+    </div>
+  </div>
+
+  </div><!-- end tab-case-details -->
+
+  <!-- ==================== TAB: PROMOTION READINESS ==================== -->
+  <div class="tab-panel" id="tab-promotion">
+  <!-- ==================== PROMOTION READINESS ==================== -->
+  <div class="promotion-section" style="opacity:0.6;position:relative;">
+    <div style="position:absolute;top:16px;right:16px;background:var(--tealBg);color:var(--teal);font-size:11px;font-weight:600;padding:4px 10px;border-radius:6px;border:1px dashed var(--teal);z-index:1;">🚧 Future Section — Coming Soon</div>
+    <div class="promotion-header">
+      <span style="font-size:18px">🚀</span>
+      <span class="promotion-title">Promotion Readiness Assessment</span>
+      <span style="font-size:12px;color:var(--fg4);margin-left:8px;">(placeholder — criteria and thresholds TBD)</span>
+    </div>
+    <div class="promotion-body" style="filter:blur(1px);pointer-events:none;">
+      <div style="text-align:center;padding:40px 20px;color:var(--fg4);font-size:14px;">
+        <div style="font-size:32px;margin-bottom:12px;">🔒</div>
+        <p style="margin:0 0 8px 0;font-weight:600;color:var(--fg2);">Promotion Readiness — Coming Soon</p>
+        <p style="margin:0;max-width:500px;margin:0 auto;">This section will define promotion criteria, thresholds, and automated checks for advancing shadow agents to pre-production. Criteria and pass/fail logic are still being determined.</p>
+      </div>
+    </div>
+  </div><!-- end tab-promotion -->
+
+</div>
+
+<script>
+  // Tab switching
+  document.getElementById('tabBar').addEventListener('click', function(e) {
+    const btn = e.target.closest('.tab');
+    if (!btn) return;
+    // Update active tab button
+    this.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    btn.classList.add('active');
+    // Show matching panel
+    const tabId = btn.getAttribute('data-tab');
+    document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+    document.getElementById('tab-' + tabId).classList.add('active');
+  });
+</script>
+</body>
+</html>
