@@ -1228,10 +1228,6 @@
       <!-- Header -->
       <h2>🎯 SXG Agent Optimizer</h2>
       <p class="opt-subtitle">Data from March 01, 2026 — March 31, 2026</p>
-      <div class="optimizer-hero">
-        <div class="hero-number">9.9%</div>
-        <div class="hero-label">Current Pass Rate</div>
-      </div>
 
       <!-- Metric Filter -->
       <div class="opt-filter-bar">
@@ -1249,6 +1245,11 @@
         <span class="opt-filter-hint">Filter action plan by the metric you want to improve</span>
       </div>
 
+      <div class="optimizer-hero">
+        <div class="hero-number">9.9%</div>
+        <div class="hero-label">Current Pass Rate</div>
+      </div>
+
       <!-- KPI Cards -->
       <div class="opt-kpi-grid">
         <div class="opt-kpi-card"><div class="kpi-val">14,652</div><div class="kpi-lbl">Total Cases</div></div>
@@ -1264,77 +1265,7 @@
         <h3>🛠️ Prioritized Action Plan</h3>
         <p class="opt-subtitle">Specific, actionable steps to improve agent performance. Ordered by impact.</p>
 
-        <!-- Item 1 -->
-        <div class="opt-action-card border-red" data-metrics="relevance all">
-          <div class="act-title">🔴 Fix Relevance — Largest gap (+2.77)</div>
-          <p class="act-detail">Failing cases average 2.77/5 vs passing. This is the single biggest differentiator between passing and failing.</p>
-          <div class="opt-action-box">
-            <div class="box-label">Recommended Action</div>
-            <p>Review knowledge sources and RAG pipeline for relevance. Ensure the retrieval system surfaces relevant documentation before the agent generates a response.</p>
-          </div>
-          <div class="opt-impact">
-            <span class="opt-badge opt-badge-purple">952 cases affected</span>
-            <span class="opt-badge opt-badge-green">+6.5% pass rate lift</span>
-          </div>
-        </div>
-
-        <!-- Item 2 -->
-        <div class="opt-action-card border-red" data-metrics="coherence all">
-          <div class="act-title">🔴 Fix Coherence — Second largest gap (+3.11)</div>
-          <p class="act-detail">Failing cases average 3.11/5 vs passing cases.</p>
-          <div class="opt-action-box">
-            <div class="box-label">Recommended Action</div>
-            <p>Add citation requirements and source verification to reduce hallucination. Implement coherence guardrails in the agent prompt.</p>
-          </div>
-          <div class="opt-impact">
-            <span class="opt-badge opt-badge-purple">583 cases affected</span>
-            <span class="opt-badge opt-badge-green">+0.2% pass rate lift</span>
-          </div>
-        </div>
-
-        <!-- Item 3 -->
-        <div class="opt-action-card border-yellow" data-metrics="relevance groundedness all">
-          <div class="act-title">🎯 Priority scenario: MFA Reset</div>
-          <p class="act-detail">Risk score 27.6/10 — 2,316 failing on Relevance, 0 case failures out of 2,519 cases. Weakest metric: Groundedness (0/5).</p>
-          <div class="opt-action-box">
-            <div class="box-label">Recommended Action</div>
-            <p>Create dedicated knowledge articles for MFA Reset. Add scenario-specific prompt guardrails. Review all 2,316 failing case transcripts.</p>
-          </div>
-          <div class="opt-impact">
-            <span class="opt-badge opt-badge-purple">527 cases affected</span>
-            <span class="opt-badge opt-badge-green">+2.5% pass rate lift</span>
-          </div>
-        </div>
-
-        <!-- Item 4 -->
-        <div class="opt-action-card border-yellow" data-metrics="relevance groundedness all">
-          <div class="act-title">🎯 Priority scenario: SCIM - Identity - 'how to'</div>
-          <p class="act-detail">Risk score 26.9/10 — 3,173 failing on Relevance, 0 case failures out of 3,540 cases. Weakest metric: Groundedness (0/5).</p>
-          <div class="opt-action-box">
-            <div class="box-label">Recommended Action</div>
-            <p>Create dedicated knowledge articles for SCIM - Identity - 'how to'. Add scenario-specific prompt guardrails.</p>
-          </div>
-          <div class="opt-impact">
-            <span class="opt-badge opt-badge-purple">589 cases affected</span>
-            <span class="opt-badge opt-badge-green">+2.5% pass rate lift</span>
-          </div>
-        </div>
-
-        <!-- Item 5 -->
-        <div class="opt-action-card border-yellow" data-metrics="relevance groundedness all">
-          <div class="act-title">🎯 Priority scenario: SCIM - Intune - 'how to'</div>
-          <p class="act-detail">Risk score 26.9/10 — 2,500 failing on Relevance, 0 case failures out of 2,790 cases. Weakest metric: Groundedness (0/5).</p>
-          <div class="opt-action-box">
-            <div class="box-label">Recommended Action</div>
-            <p>Create dedicated knowledge articles for SCIM - Intune - 'how to'. Add scenario-specific prompt guardrails.</p>
-          </div>
-          <div class="opt-impact">
-            <span class="opt-badge opt-badge-purple">465 cases affected</span>
-            <span class="opt-badge opt-badge-green">+2.0% pass rate lift</span>
-          </div>
-        </div>
-
-        <!-- Item 6 -->
+        <!-- #1: 2,384 cases -->
         <div class="opt-action-card border-blue" data-metrics="groundedness retrieval accuracy all">
           <div class="act-title">🚨 13,201 failing case(s) were NOT escalated</div>
           <p class="act-detail">These cases failed without triggering human escalation. The agent may have confidently delivered subpar responses.</p>
@@ -1348,7 +1279,77 @@
           </div>
         </div>
 
-        <!-- Item 7 -->
+        <!-- #2: 952 cases -->
+        <div class="opt-action-card border-red" data-metrics="relevance all">
+          <div class="act-title">🔴 Fix Relevance — Largest gap (+2.77)</div>
+          <p class="act-detail">Failing cases average 2.77/5 vs passing. This is the single biggest differentiator between passing and failing.</p>
+          <div class="opt-action-box">
+            <div class="box-label">Recommended Action</div>
+            <p>Review knowledge sources and RAG pipeline for relevance. Ensure the retrieval system surfaces relevant documentation before the agent generates a response.</p>
+          </div>
+          <div class="opt-impact">
+            <span class="opt-badge opt-badge-purple">952 cases affected</span>
+            <span class="opt-badge opt-badge-green">+6.5% pass rate lift</span>
+          </div>
+        </div>
+
+        <!-- #3: 589 cases -->
+        <div class="opt-action-card border-yellow" data-metrics="relevance groundedness all">
+          <div class="act-title">🎯 Priority scenario: SCIM - Identity - 'how to'</div>
+          <p class="act-detail">Risk score 26.9/10 — 3,173 failing on Relevance, 0 case failures out of 3,540 cases. Weakest metric: Groundedness (0/5).</p>
+          <div class="opt-action-box">
+            <div class="box-label">Recommended Action</div>
+            <p>Create dedicated knowledge articles for SCIM - Identity - 'how to'. Add scenario-specific prompt guardrails.</p>
+          </div>
+          <div class="opt-impact">
+            <span class="opt-badge opt-badge-purple">589 cases affected</span>
+            <span class="opt-badge opt-badge-green">+2.5% pass rate lift</span>
+          </div>
+        </div>
+
+        <!-- #4: 583 cases -->
+        <div class="opt-action-card border-red" data-metrics="coherence all">
+          <div class="act-title">🔴 Fix Coherence — Second largest gap (+3.11)</div>
+          <p class="act-detail">Failing cases average 3.11/5 vs passing cases.</p>
+          <div class="opt-action-box">
+            <div class="box-label">Recommended Action</div>
+            <p>Add citation requirements and source verification to reduce hallucination. Implement coherence guardrails in the agent prompt.</p>
+          </div>
+          <div class="opt-impact">
+            <span class="opt-badge opt-badge-purple">583 cases affected</span>
+            <span class="opt-badge opt-badge-green">+0.2% pass rate lift</span>
+          </div>
+        </div>
+
+        <!-- #5: 527 cases -->
+        <div class="opt-action-card border-yellow" data-metrics="relevance groundedness all">
+          <div class="act-title">🎯 Priority scenario: MFA Reset</div>
+          <p class="act-detail">Risk score 27.6/10 — 2,316 failing on Relevance, 0 case failures out of 2,519 cases. Weakest metric: Groundedness (0/5).</p>
+          <div class="opt-action-box">
+            <div class="box-label">Recommended Action</div>
+            <p>Create dedicated knowledge articles for MFA Reset. Add scenario-specific prompt guardrails. Review all 2,316 failing case transcripts.</p>
+          </div>
+          <div class="opt-impact">
+            <span class="opt-badge opt-badge-purple">527 cases affected</span>
+            <span class="opt-badge opt-badge-green">+2.5% pass rate lift</span>
+          </div>
+        </div>
+
+        <!-- #6: 465 cases -->
+        <div class="opt-action-card border-yellow" data-metrics="relevance groundedness all">
+          <div class="act-title">🎯 Priority scenario: SCIM - Intune - 'how to'</div>
+          <p class="act-detail">Risk score 26.9/10 — 2,500 failing on Relevance, 0 case failures out of 2,790 cases. Weakest metric: Groundedness (0/5).</p>
+          <div class="opt-action-box">
+            <div class="box-label">Recommended Action</div>
+            <p>Create dedicated knowledge articles for SCIM - Intune - 'how to'. Add scenario-specific prompt guardrails.</p>
+          </div>
+          <div class="opt-impact">
+            <span class="opt-badge opt-badge-purple">465 cases affected</span>
+            <span class="opt-badge opt-badge-green">+2.0% pass rate lift</span>
+          </div>
+        </div>
+
+        <!-- #7: 201 cases -->
         <div class="opt-action-card border-green" data-metrics="fluency completeness coherence all">
           <div class="act-title">📚 Expand knowledge base for weak scenarios</div>
           <p class="act-detail">ACTNow Error, Case Summary have the lowest quality scores. The agent likely lacks sufficient documentation for these complex operations.</p>
