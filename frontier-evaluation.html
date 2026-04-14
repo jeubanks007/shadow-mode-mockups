@@ -272,20 +272,15 @@
   .opt-gap-red { color: var(--red); font-weight: 600; }
   .opt-gap-yellow { color: var(--orange); font-weight: 600; }
   .opt-section { margin-bottom: 28px; }
-  .opt-filter-bar {
-    display: flex; align-items: center; gap: 12px; margin-bottom: 20px;
-    padding: 12px 16px; background: var(--bg); border: 1px solid var(--stroke);
-    border-radius: var(--radius-xl); box-shadow: var(--shadow4);
+  .opt-target-row { cursor: pointer; transition: background .15s; }
+  .opt-target-row:hover { background: var(--bg3); }
+  .opt-target-row.opt-target-active { background: var(--tealBg); font-weight: 600; }
+  .opt-target-row.opt-target-active td:first-child { color: var(--teal); }
+  .opt-active-label {
+    display: inline-block; font-size: 11px; font-weight: 600; color: var(--teal);
+    background: var(--tealBg); border: 1px solid var(--teal); border-radius: 12px;
+    padding: 1px 8px; margin-left: 8px; vertical-align: middle;
   }
-  .opt-filter-bar label { font-size: 13px; font-weight: 600; color: var(--fg3); white-space: nowrap; }
-  .opt-filter-bar select {
-    padding: 7px 32px 7px 12px; font-size: 13px; font-family: inherit;
-    border: 1px solid var(--stroke); border-radius: var(--radius-md);
-    background: var(--bg); color: var(--fg1); cursor: pointer;
-    appearance: auto; min-width: 200px;
-  }
-  .opt-filter-bar select:focus { outline: 2px solid var(--brand); outline-offset: -1px; }
-  .opt-filter-hint { font-size: 12px; color: var(--fg4); margin-left: auto; }
   @media(max-width:700px) { .opt-kpi-grid { grid-template-columns: repeat(2, 1fr); } }
 </style>
 </head>
@@ -1229,20 +1224,46 @@
       <h2>🎯 Agent Optimizer</h2>
       <p class="opt-subtitle">Data from March 01, 2026 — March 31, 2026</p>
 
-      <!-- Metric Filter -->
-      <div class="opt-filter-bar">
-        <label for="optMetricFilter">Optimize for Metric:</label>
-        <select id="optMetricFilter" onchange="filterOptimizer(this.value)">
-          <option value="all">All Metrics</option>
-          <option value="relevance">Relevance</option>
-          <option value="coherence">Coherence</option>
-          <option value="fluency">Fluency</option>
-          <option value="groundedness">Groundedness</option>
-          <option value="retrieval">Retrieval</option>
-          <option value="completeness">Completeness</option>
-          <option value="accuracy">Accuracy</option>
-        </select>
-        <span class="opt-filter-hint">Filter action plan by the metric you want to improve</span>
+      <!-- Improvement Targets (clickable to filter) -->
+      <div class="opt-section">
+        <h3>📈 Improvement Targets</h3>
+        <p class="opt-subtitle">Click a metric row to filter the action plan below. Target scores based on what passing cases achieve.</p>
+
+        <table class="opt-targets-table" id="optTargetsTable">
+          <thead>
+            <tr><th>Metric</th><th>Current</th><th>Target</th><th>Gap</th><th style="min-width:140px">Progress</th></tr>
+          </thead>
+          <tbody>
+            <tr class="opt-target-row opt-target-active" data-metric="all" onclick="filterByMetricRow(this, 'all')">
+              <td style="font-weight:600;">All Metrics</td><td>—</td><td>—</td><td>—</td>
+              <td><span style="font-size:12px;color:var(--fg3);">Show all actions</span></td>
+            </tr>
+            <tr class="opt-target-row" data-metric="relevance" onclick="filterByMetricRow(this, 'relevance')">
+              <td>Relevance</td><td>2.77</td><td>4.0</td><td class="opt-gap-yellow">1.23</td>
+              <td><div class="opt-bar-track"><div class="opt-bar-fill" style="width:69.25%"></div></div></td>
+            </tr>
+            <tr class="opt-target-row" data-metric="coherence" onclick="filterByMetricRow(this, 'coherence')">
+              <td>Coherence</td><td>3.11</td><td>4.0</td><td class="opt-gap-yellow">0.89</td>
+              <td><div class="opt-bar-track"><div class="opt-bar-fill" style="width:77.75%"></div></div></td>
+            </tr>
+            <tr class="opt-target-row" data-metric="fluency" onclick="filterByMetricRow(this, 'fluency')">
+              <td>Fluency</td><td>3.26</td><td>4.0</td><td class="opt-gap-yellow">0.74</td>
+              <td><div class="opt-bar-track"><div class="opt-bar-fill" style="width:81.5%"></div></div></td>
+            </tr>
+            <tr class="opt-target-row" data-metric="groundedness" onclick="filterByMetricRow(this, 'groundedness')">
+              <td>Groundedness</td><td>0.00</td><td>4.0</td><td class="opt-gap-red">4.00</td>
+              <td><div class="opt-bar-track"><div class="opt-bar-fill" style="width:0%"></div></div></td>
+            </tr>
+            <tr class="opt-target-row" data-metric="retrieval" onclick="filterByMetricRow(this, 'retrieval')">
+              <td>Retrieval</td><td>0.00</td><td>4.0</td><td class="opt-gap-red">4.00</td>
+              <td><div class="opt-bar-track"><div class="opt-bar-fill" style="width:0%"></div></div></td>
+            </tr>
+            <tr class="opt-target-row" data-metric="completeness" onclick="filterByMetricRow(this, 'completeness')">
+              <td>Completeness</td><td>0.00</td><td>4.0</td><td class="opt-gap-red">4.00</td>
+              <td><div class="opt-bar-track"><div class="opt-bar-fill" style="width:0%"></div></div></td>
+            </tr>
+          </tbody>
+        </table>
       </div>
 
       <div class="optimizer-hero">
@@ -1363,44 +1384,6 @@
         </div>
       </div>
 
-      <!-- Improvement Targets -->
-      <div class="opt-section">
-        <h3>📈 Improvement Targets</h3>
-        <p class="opt-subtitle">Target scores based on what passing cases achieve. Close these gaps to improve performance.</p>
-
-        <table class="opt-targets-table">
-          <thead>
-            <tr><th>Metric</th><th>Current</th><th>Target</th><th>Gap</th><th style="min-width:140px">Progress</th></tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>Relevance</td><td>2.77</td><td>4.0</td><td class="opt-gap-yellow">1.23</td>
-              <td><div class="opt-bar-track"><div class="opt-bar-fill" style="width:69.25%"></div></div></td>
-            </tr>
-            <tr>
-              <td>Coherence</td><td>3.11</td><td>4.0</td><td class="opt-gap-yellow">0.89</td>
-              <td><div class="opt-bar-track"><div class="opt-bar-fill" style="width:77.75%"></div></div></td>
-            </tr>
-            <tr>
-              <td>Fluency</td><td>3.26</td><td>4.0</td><td class="opt-gap-yellow">0.74</td>
-              <td><div class="opt-bar-track"><div class="opt-bar-fill" style="width:81.5%"></div></div></td>
-            </tr>
-            <tr>
-              <td>Groundedness</td><td>0.00</td><td>4.0</td><td class="opt-gap-red">4.00</td>
-              <td><div class="opt-bar-track"><div class="opt-bar-fill" style="width:0%"></div></div></td>
-            </tr>
-            <tr>
-              <td>Retrieval</td><td>0.00</td><td>4.0</td><td class="opt-gap-red">4.00</td>
-              <td><div class="opt-bar-track"><div class="opt-bar-fill" style="width:0%"></div></div></td>
-            </tr>
-            <tr>
-              <td>Completeness</td><td>0.00</td><td>4.0</td><td class="opt-gap-red">4.00</td>
-              <td><div class="opt-bar-track"><div class="opt-bar-fill" style="width:0%"></div></div></td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-
     </div>
   </div><!-- end tab-optimizer -->
 
@@ -1422,36 +1405,29 @@
     document.getElementById('tab-' + tabId).classList.add('active');
   });
 
-  // Optimizer metric filter
-  function filterOptimizer(metric) {
+  // Optimizer metric filter via clickable table rows
+  function filterByMetricRow(row, metric) {
+    // Update active row
+    document.querySelectorAll('.opt-target-row').forEach(function(r) {
+      r.classList.remove('opt-target-active');
+    });
+    row.classList.add('opt-target-active');
+
     // Show/hide action cards
     document.querySelectorAll('.opt-action-card').forEach(function(card) {
       var metrics = card.getAttribute('data-metrics') || '';
       card.style.display = metrics.indexOf(metric) !== -1 ? '' : 'none';
     });
 
-    // Highlight matching row in targets table
-    document.querySelectorAll('.opt-targets-table tbody tr').forEach(function(row) {
-      var metricName = row.querySelector('td').textContent.trim().toLowerCase();
-      if (metric === 'all') {
-        row.style.background = '';
-        row.style.fontWeight = '';
-      } else if (metricName === metric) {
-        row.style.background = 'var(--tealBg)';
-        row.style.fontWeight = '600';
-      } else {
-        row.style.background = '';
-        row.style.fontWeight = '';
-      }
-    });
-
-    // Update count badge
-    var visible = document.querySelectorAll('.opt-action-card[style=""], .opt-action-card:not([style])').length;
-    var hint = document.querySelector('.opt-filter-hint');
-    if (metric === 'all') {
-      hint.textContent = 'Filter action plan by the metric you want to improve';
-    } else {
-      hint.textContent = visible + ' action' + (visible !== 1 ? 's' : '') + ' related to ' + metric.charAt(0).toUpperCase() + metric.slice(1);
+    // Update action plan heading with active filter label
+    var heading = document.querySelector('#tab-optimizer .opt-section h3');
+    var existing = heading.querySelector('.opt-active-label');
+    if (existing) existing.remove();
+    if (metric !== 'all') {
+      var label = document.createElement('span');
+      label.className = 'opt-active-label';
+      label.textContent = 'Filtering: ' + metric.charAt(0).toUpperCase() + metric.slice(1);
+      heading.appendChild(label);
     }
   }
 </script>
